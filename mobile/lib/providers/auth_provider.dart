@@ -99,4 +99,13 @@ class AuthProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  /// Mock login for development/testing
+  /// Bypasses API calls and uses mock data
+  void setMockUser(User user, String token) {
+    _user = user;
+    _apiService.setToken(token);
+    _saveUserToStorage(token, user);
+    notifyListeners();
+  }
 }

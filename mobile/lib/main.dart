@@ -6,11 +6,13 @@ import 'providers/profile_provider.dart';
 import 'services/api_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/common/role_selector_screen.dart';
 import 'screens/demandante/demandante_dashboard.dart';
 import 'screens/demandante/new_request_screen.dart';
 import 'screens/proveedor/proveedor_dashboard.dart';
 import 'screens/proveedor/profile_setup_screen.dart';
 import 'utils/constants.dart';
+import 'utils/mock_data.dart';
 
 /// WorkMatch Mobile App
 /// Enterprise-grade implementation with:
@@ -19,6 +21,7 @@ import 'utils/constants.dart';
 /// - Proper routing
 /// - Theme configuration
 /// - Error handling
+/// - Development mode with mock data
 void main() {
   runApp(const MyApp());
 }
@@ -75,6 +78,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => const AuthChecker(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
+          '/role-selector': (context) => const RoleSelectorScreen(),
 
           // Demandante routes
           '/demandante': (context) => const DemandanteDashboard(),
@@ -91,12 +95,34 @@ class MyApp extends StatelessWidget {
 
 /// Auth Checker
 /// Determines which screen to show based on authentication state
+/// In development mode: Shows role selector instead of login
 /// Best practice: Show appropriate screen immediately, no unnecessary redirects
 class AuthChecker extends StatelessWidget {
   const AuthChecker({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // DEVELOPMENT MODE - Skip login
+    if (MockData.isDevelopmentMode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacementNamed('/role-selector');
+      });
+
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('Modo Desarrollo'),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // PRODUCTION MODE - Normal authentication flow
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         // Authenticated users go to their dashboard

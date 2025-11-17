@@ -245,4 +245,15 @@ class RequestProvider with ChangeNotifier {
 
     return 'Ocurrió un error. Por favor intenta de nuevo.';
   }
+
+  /// Mock data setters for development/testing
+  void setMockRequests(List<ServiceRequest> requests) {
+    _myRequests = requests;
+    notifyListeners();
+  }
+
+  void setMockPendingRequests(List<ServiceRequest> requests) {
+    _pendingRequests = requests;
+    notifyListeners();
+  }
 }

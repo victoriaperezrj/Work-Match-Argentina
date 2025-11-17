@@ -123,4 +123,10 @@ class ProfileProvider with ChangeNotifier {
 
     return 'Ocurrió un error. Por favor intenta de nuevo.';
   }
+
+  /// Mock data setter for development/testing
+  void setMockProfile(ProviderProfile profile) {
+    _profile = profile;
+    notifyListeners();
+  }
 }
