@@ -75,7 +75,9 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => const AuthChecker(),
+          '/': (context) => MockData.isDevelopmentMode
+              ? const RoleSelectorScreen()
+              : const AuthChecker(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
           '/role-selector': (context) => const RoleSelectorScreen(),
@@ -94,35 +96,12 @@ class MyApp extends StatelessWidget {
 }
 
 /// Auth Checker
-/// Determines which screen to show based on authentication state
-/// In development mode: Shows role selector instead of login
-/// Best practice: Show appropriate screen immediately, no unnecessary redirects
+/// For production mode - checks authentication and routes accordingly
 class AuthChecker extends StatelessWidget {
   const AuthChecker({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // DEVELOPMENT MODE - Skip login
-    if (MockData.isDevelopmentMode) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacementNamed('/role-selector');
-      });
-
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Modo Desarrollo'),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // PRODUCTION MODE - Normal authentication flow
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
         // Authenticated users go to their dashboard
