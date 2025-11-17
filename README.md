@@ -193,17 +193,33 @@ El frontend estará disponible en `http://localhost:3000`
 ## Deploy
 
 ### Frontend (Vercel)
-El proyecto incluye `vercel.json` configurado para deploy automático:
+El proyecto es un **monorepo** con el código de Next.js en la carpeta `frontend/`.
+
+**Configuración en Vercel Dashboard:**
+1. Importa el repositorio en Vercel
+2. **Root Directory**: Configura a `frontend`
+3. **Framework**: Next.js (auto-detectado)
+4. **Variables de entorno**: Añade `NEXT_PUBLIC_API_URL` con la URL de tu API en producción
+
+**Deploy con CLI:**
 ```bash
 vercel --prod
 ```
 
+El archivo `vercel.json` en la raíz ya está configurado para manejar el monorepo automáticamente.
+
+📖 **Guía detallada**: Ver [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
+
 ### Backend
 Los servicios backend pueden desplegarse en:
-- Google Cloud Run
-- AWS ECS/Fargate
-- Kubernetes
+- **Google Cloud Run** (Recomendado para Go y Python)
+- **AWS ECS/Fargate**
+- **Railway** (Deploy rápido con Docker)
+- **Render** (Alternativa a Heroku)
+- **Kubernetes**
 - Cualquier plataforma que soporte contenedores Docker
+
+**Importante**: Configura las variables de entorno y actualiza `NEXT_PUBLIC_API_URL` en Vercel con la URL del backend en producción.
 
 ## Seguridad
 
