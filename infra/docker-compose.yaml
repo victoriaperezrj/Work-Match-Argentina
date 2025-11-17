@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: workmatch-postgres
+    environment:
+      POSTGRES_USER: workmatch
+      POSTGRES_PASSWORD: workmatch123
+      POSTGRES_DB: workmatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workmatch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-core:
+    build:
+      context: ../microservices/api-core
+      dockerfile: Dockerfile
+    container_name: workmatch-api-core
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://workmatch:workmatch123@postgres:5432/workmatch?sslmode=disable
+      JWT_SECRET: your-secret-key-change-in-production
+      PORT: 8080
+      AI_SERVICE_URL: http://api-ia:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  api-ia:
+    build:
+      context: ../microservices/api-ia
+      dockerfile: Dockerfile
+    container_name: workmatch-api-ia
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: 8081
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
