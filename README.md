@@ -6,21 +6,40 @@ Plataforma de matching de servicios con arquitectura de microservicios que conec
 
 ```
 Work-Match-Argentina/
-├── frontend/                 # Next.js + TypeScript + Tailwind CSS
+├── frontend/                 # Next.js + TypeScript + Tailwind CSS (Web)
+├── mobile/                   # Flutter - App móvil Android/iOS 📱
 ├── microservices/
 │   ├── api-core/            # Go API - Lógica de negocio principal
 │   └── api-ia/              # Python FastAPI - Servicio de IA para pricing
 └── infra/                   # Docker Compose para desarrollo local
 ```
 
+## Plataformas
+
+Esta es una solución **multiplataforma** al estilo Mercado Libre:
+- 💻 **Web Responsive** (Next.js) - Acceso desde navegador en PC/móvil
+- 📱 **App Móvil Nativa** (Flutter) - Experiencia optimizada para Android/iOS
+- 🔗 **Mismo Backend** - Ambas plataformas se conectan a la misma API
+
 ## Tecnologías
 
-- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+### Frontend Web
+- **Framework**: Next.js 14, React 18, TypeScript
+- **Estilos**: Tailwind CSS
+- **Deploy**: Vercel
+
+### Mobile App
+- **Framework**: Flutter (Dart)
+- **State Management**: Provider
+- **HTTP Client**: Dio/HTTP
+- **Storage**: SharedPreferences, Flutter Secure Storage
+- **Plataformas**: Android & iOS
+
+### Backend
 - **API Core**: Go 1.21, Gorilla Mux, PostgreSQL, JWT, bcrypt
 - **API IA**: Python 3.11, FastAPI, Uvicorn
 - **Base de Datos**: PostgreSQL 15
 - **Infraestructura**: Docker, Docker Compose
-- **Deploy**: Vercel (Frontend)
 
 ## Características
 
@@ -51,9 +70,10 @@ Work-Match-Argentina/
 
 ### Prerequisitos
 - Docker y Docker Compose
-- Node.js 18+ (para desarrollo local del frontend)
+- Node.js 18+ (para desarrollo local del frontend web)
 - Go 1.21+ (para desarrollo local del backend)
 - Python 3.11+ (para desarrollo local del servicio IA)
+- Flutter SDK (para desarrollo de la app móvil)
 
 ### Ejecución con Docker Compose
 
@@ -74,7 +94,7 @@ Esto levantará:
 - **API Core (Go)**: `localhost:8080`
 - **API IA (Python)**: `localhost:8081`
 
-3. Para el frontend (en desarrollo local):
+3. Para el frontend web (en desarrollo local):
 ```bash
 cd frontend
 npm install
@@ -82,6 +102,29 @@ npm run dev
 ```
 
 El frontend estará disponible en `http://localhost:3000`
+
+### Ejecución de la App Móvil
+
+1. Instalar Flutter SDK:
+   - Descarga desde [flutter.dev](https://flutter.dev/docs/get-started/install)
+   - Verifica: `flutter doctor`
+
+2. Instalar dependencias:
+```bash
+cd mobile
+flutter pub get
+```
+
+3. Ejecutar en emulador/dispositivo:
+```bash
+# Android
+flutter run
+
+# iOS (solo macOS)
+flutter run
+```
+
+📱 **Documentación completa**: Ver [mobile/README.md](./mobile/README.md)
 
 ### Variables de Entorno
 
