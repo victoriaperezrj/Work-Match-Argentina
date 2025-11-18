@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 // Service request interface
 export interface ServiceRequest {
@@ -100,45 +101,55 @@ const mockRequests: ServiceRequest[] = [
   },
 ];
 
-// Create the store
-export const useRequestsStore = create<RequestsState>((set, get) => ({
-  // Initial state with mock data
-  requests: mockRequests,
-  isLoading: false,
-  error: null,
+// Create the store with persistence
+export const useRequestsStore = create<RequestsState>()(
+  persist(
+    (set, get) => ({
+      // Initial state with mock data
+      requests: mockRequests,
+      isLoading: false,
+      error: null,
 
-  // Actions
-  setRequests: (requests) => set({ requests }),
+      // Actions
+      setRequests: (requests) => set({ requests }),
 
-  addRequest: (request) => set((state) => ({
-    requests: [request, ...state.requests],
-  })),
+      addRequest: (request) => set((state) => ({
+        requests: [request, ...state.requests],
+      })),
 
-  updateRequest: (id, updates) => set((state) => ({
-    requests: state.requests.map((r) =>
-      r.id === id ? { ...r, ...updates, updated_at: new Date().toISOString() } : r
-    ),
-  })),
+      updateRequest: (id, updates) => set((state) => ({
+        requests: state.requests.map((r) =>
+          r.id === id ? { ...r, ...updates, updated_at: new Date().toISOString() } : r
+        ),
+      })),
 
-  removeRequest: (id) => set((state) => ({
-    requests: state.requests.filter((r) => r.id !== id),
-  })),
+      removeRequest: (id) => set((state) => ({
+        requests: state.requests.filter((r) => r.id !== id),
+      })),
 
-  setLoading: (loading) => set({ isLoading: loading }),
+      setLoading: (loading) => set({ isLoading: loading }),
 
-  setError: (error) => set({ error }),
+      setError: (error) => set({ error }),
 
-  // Filters
-  getByStatus: (status) => get().requests.filter((r) => r.status === status),
+      // Filters
+      getByStatus: (status) => get().requests.filter((r) => r.status === status),
 
-  getByDemandante: (demandanteId) =>
-    get().requests.filter((r) => r.demandante_id === demandanteId),
+      getByDemandante: (demandanteId) =>
+        get().requests.filter((r) => r.demandante_id === demandanteId),
 
-  getByProvider: (providerId) =>
-    get().requests.filter((r) => r.provider_id === providerId),
+      getByProvider: (providerId) =>
+        get().requests.filter((r) => r.provider_id === providerId),
 
-  getPending: () => get().requests.filter((r) => r.status === 'Pendiente'),
-}));
+      getPending: () => get().requests.filter((r) => r.status === 'Pendiente'),
+    }),
+    {
+      name: 'workmatch-requests', // localStorage key
+      partialize: (state) => ({
+        requests: state.requests,
+      }),
+    }
+  )
+);
 
 // Selector hooks
 export const useRequests = () => useRequestsStore((state) => state.requests);
