@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LOCATIONS_BY_DEPARTMENT, DEPARTMENTS, getLocationDisplayName } from '@/lib/constants/locations';
+import { useAuthStore } from '@/lib/stores';
 
 const SERVICE_TYPES = [
   'Plomería',
@@ -20,12 +21,23 @@ const SERVICE_TYPES = [
 
 export default function ProveedorProfilePage() {
   const router = useRouter();
-  const [services, setServices] = useState<string[]>(['Plomería', 'Electricidad']);
-  const [radiusKM, setRadiusKM] = useState('15');
-  const [locationId, setLocationId] = useState('san-luis-capital');
+  const { user, setUser } = useAuthStore();
+
+  const [services, setServices] = useState<string[]>(user?.services || ['Plomería', 'Electricidad']);
+  const [radiusKM, setRadiusKM] = useState(String(user?.radius_km || 15));
+  const [locationId, setLocationId] = useState(user?.location_id || 'san-luis-capital');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Update form when user data changes
+  useEffect(() => {
+    if (user) {
+      if (user.services) setServices(user.services);
+      if (user.radius_km) setRadiusKM(String(user.radius_km));
+      if (user.location_id) setLocationId(user.location_id);
+    }
+  }, [user]);
 
   const handleServiceToggle = (service: string) => {
     if (services.includes(service)) {
@@ -50,8 +62,15 @@ export default function ProveedorProfilePage() {
         throw new Error('Debes seleccionar tu ubicación');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Update user profile in store
+      if (user) {
+        setUser({
+          ...user,
+          services,
+          location_id: locationId,
+          radius_km: parseInt(radiusKM),
+        });
+      }
 
       setSuccess('¡Perfil actualizado exitosamente!');
       setTimeout(() => {

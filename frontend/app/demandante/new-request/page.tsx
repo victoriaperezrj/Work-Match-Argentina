@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SAN_LUIS_LOCATIONS, LOCATIONS_BY_DEPARTMENT, DEPARTMENTS, getLocationDisplayName } from '@/lib/constants/locations';
+import { useAuthStore, useRequestsStore } from '@/lib/stores';
 
 const SERVICE_TYPES = [
   'Plomería',
@@ -20,6 +21,9 @@ const SERVICE_TYPES = [
 
 export default function NewRequestPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
+  const addRequest = useRequestsStore((state) => state.addRequest);
+
   const [description, setDescription] = useState('');
   const [serviceType, setServiceType] = useState(SERVICE_TYPES[0]);
   const [locationId, setLocationId] = useState('');
@@ -41,8 +45,22 @@ export default function NewRequestPage() {
         throw new Error('Debes describir el trabajo que necesitas');
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Create new request
+      const newRequest = {
+        id: `request-${Date.now()}`,
+        demandante_id: user?.id || 'mock-user-1',
+        description: description.trim(),
+        service_type: serviceType,
+        location_id: locationId,
+        status: 'Pendiente' as const,
+        price_quoted: null,
+        provider_id: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      // Add to store
+      addRequest(newRequest);
 
       setSuccess(true);
       setTimeout(() => {
