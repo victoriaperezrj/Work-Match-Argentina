@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuthStore } from '@/lib/stores';
 
 export default function LoginPage() {
@@ -107,8 +108,14 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
+        <div className="text-center animate-slideUp space-y-2" style={{ animationDelay: '0.2s' }}>
           <p className="text-sm text-adaptive-muted">
+            ¿No tienes cuenta?{' '}
+            <Link href="/register" className="text-blue-600 dark:text-cyan-400 hover:underline font-medium">
+              Regístrate aquí
+            </Link>
+          </p>
+          <p className="text-xs text-adaptive-muted">
             Modo de prueba • Sin autenticación requerida
           </p>
         </div>
