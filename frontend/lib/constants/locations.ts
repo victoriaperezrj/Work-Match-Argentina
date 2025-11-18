@@ -71,7 +71,7 @@ export const LOCATIONS_BY_DEPARTMENT = SAN_LUIS_LOCATIONS.reduce((acc, location)
 }, {} as Record<string, Location[]>);
 
 // Get all unique departments
-export const DEPARTMENTS = [...new Set(SAN_LUIS_LOCATIONS.map(l => l.department))].sort();
+export const DEPARTMENTS = Array.from(new Set(SAN_LUIS_LOCATIONS.map(l => l.department))).sort();
 
 // Helper to get location by ID
 export function getLocationById(id: string): Location | undefined {
