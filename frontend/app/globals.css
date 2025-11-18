@@ -78,53 +78,102 @@
 @layer components {
   /* Glassmorphism - Light Mode */
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg;
+    @apply bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
   .glass-hover {
-    @apply hover:bg-white/90 hover:border-blue-300 transition-all duration-300;
+    @apply hover:bg-white/90 hover:border-blue-200/80 transition-all duration-300;
+    &:hover {
+      box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
   }
 
   /* Glassmorphism - Dark Mode */
   @media (prefers-color-scheme: dark) {
     .glass {
-      @apply bg-gray-900/40 border-gray-700/50;
+      @apply bg-gray-900/60 border-gray-700/50;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 80px rgba(6, 182, 212, 0.05);
     }
 
     .glass-hover {
-      @apply hover:bg-gray-900/60 hover:border-cyan-400/50;
+      @apply hover:bg-gray-900/80 hover:border-cyan-400/40;
+      &:hover {
+        box-shadow: 0 12px 40px rgba(6, 182, 212, 0.2), 0 0 60px rgba(6, 182, 212, 0.1);
+      }
     }
   }
 
-  /* Premium Buttons - Light Mode */
+  /* Premium Buttons with Microinteractions */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-200 ease-out focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
+    @apply px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold rounded-xl transition-all duration-200 ease-out;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  }
+
+  .btn-secondary:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(0) scale(0.98);
   }
 
   .btn-outline {
-    @apply px-6 py-3 border-2 border-blue-500 text-blue-500 rounded-xl bg-transparent transition-all duration-300 hover:bg-blue-50;
+    @apply px-6 py-3 border-2 border-blue-500 text-blue-600 rounded-xl bg-transparent transition-all duration-200 ease-out hover:bg-blue-50;
+  }
+
+  .btn-outline:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
   }
 
   .btn-ghost {
-    @apply px-6 py-3 text-gray-600 rounded-xl transition-all duration-300 hover:text-blue-600 hover:bg-blue-50;
+    @apply px-6 py-3 text-gray-600 rounded-xl transition-all duration-200 ease-out hover:text-blue-600 hover:bg-blue-50;
   }
 
   .btn-danger {
-    @apply px-6 py-3 bg-gradient-to-r from-red-600 to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
+    @apply px-6 py-3 bg-gradient-to-r from-red-600 to-rose-500 text-white font-semibold rounded-xl transition-all duration-200 ease-out;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.45);
   }
 
   /* Dark Mode Buttons */
   @media (prefers-color-scheme: dark) {
     .btn-primary {
-      @apply hover:shadow-glow focus:ring-cyan-300;
+      @apply focus:ring-cyan-300;
+      box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.1);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4), 0 0 60px rgba(6, 182, 212, 0.15);
     }
 
     .btn-outline {
-      @apply border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 hover:shadow-glow-cyan;
+      @apply border-cyan-400 text-cyan-400 hover:bg-cyan-400/10;
+    }
+
+    .btn-outline:hover {
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
     }
 
     .btn-ghost {
@@ -132,14 +181,75 @@
     }
   }
 
-  /* Premium Cards */
+  /* Premium Cards with Soft Shadows */
   .card-premium {
-    @apply p-6 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg hover:border-blue-300 hover:shadow-xl transition-all duration-300;
+    @apply p-6 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl transition-all duration-300 ease-out;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .card-premium:hover {
+    @apply border-blue-200;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(59, 130, 246, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 
   @media (prefers-color-scheme: dark) {
     .card-premium {
-      @apply bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-400/20 hover:border-cyan-400/50 hover:shadow-glow;
+      @apply bg-gray-900/60 border-gray-800/50;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 60px rgba(6, 182, 212, 0.03);
+    }
+
+    .card-premium:hover {
+      @apply border-cyan-400/40;
+      box-shadow: 0 12px 40px rgba(6, 182, 212, 0.15), 0 0 80px rgba(6, 182, 212, 0.08);
+    }
+  }
+
+  /* Interactive Card - for clickable cards */
+  .card-interactive {
+    @apply p-5 rounded-xl border transition-all duration-200 ease-out cursor-pointer;
+    @apply bg-gradient-to-br from-gray-50 to-white border-gray-200;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  .card-interactive:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-interactive-blue:hover {
+    @apply border-blue-300 bg-gradient-to-br from-blue-50 to-white;
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+  }
+
+  .card-interactive-green:hover {
+    @apply border-emerald-300 bg-gradient-to-br from-emerald-50 to-white;
+    box-shadow: 0 8px 30px rgba(16, 185, 129, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card-interactive {
+      @apply bg-gradient-to-br from-gray-900/80 to-gray-800/60 border-gray-700/50;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-interactive:hover {
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-interactive-blue:hover {
+      @apply border-cyan-400/50 bg-gradient-to-br from-cyan-900/30 to-blue-900/20;
+      box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
+    }
+
+    .card-interactive-green:hover {
+      @apply border-emerald-400/50 bg-gradient-to-br from-emerald-900/30 to-green-900/20;
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.15);
     }
   }
 
@@ -239,11 +349,16 @@
 
   /* Animations */
   .hover-lift {
-    @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg;
+    @apply transition-all duration-200 ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
   }
 
   .animate-glow {
-    @apply animate-pulse shadow-lg shadow-cyan-500/50;
+    animation: glow 2s ease-in-out infinite alternate;
   }
 
   /* Legacy utility classes for backward compatibility */
@@ -257,5 +372,86 @@
 
   .card {
     @apply card-premium;
+  }
+}
+
+/* Keyframe Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(10px, -10px) scale(1.05);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.6);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation Utilities */
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s ease-out forwards;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, select, textarea {
+  transition: all 0.2s ease-out;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

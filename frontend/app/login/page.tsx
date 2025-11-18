@@ -49,59 +49,55 @@ export default function LoginPage() {
             {/* Client Option */}
             <button
               onClick={() => handleRoleSelect('demandante')}
-              className="w-full text-left group"
+              className="w-full text-left group card-interactive card-interactive-blue"
             >
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-400/50 transition-all duration-300">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-blue-100 dark:bg-gradient-to-br dark:from-blue-600/20 dark:to-cyan-500/20 group-hover:bg-blue-200 dark:group-hover:from-blue-600/40 dark:group-hover:to-cyan-500/40 transition-all duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-cyan-400 transition-colors">
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-adaptive-primary group-hover:text-blue-600 dark:group-hover:text-cyan-300 transition-colors">
-                        Necesito un servicio
-                      </p>
-                      <p className="text-sm text-adaptive-muted group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
-                        Publicar necesidades y contratar
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
                   </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-cyan-400 group-hover:translate-x-1 transition-all">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-cyan-300 transition-colors duration-200">
+                      Necesito un servicio
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Publicar necesidades y contratar
+                    </p>
+                  </div>
                 </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-cyan-400 group-hover:translate-x-1 transition-all duration-200">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
               </div>
             </button>
 
             {/* Artisan Option */}
             <button
               onClick={() => handleRoleSelect('proveedor')}
-              className="w-full text-left group"
+              className="w-full text-left group card-interactive card-interactive-green"
             >
-              <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-400/50 transition-all duration-300">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-emerald-100 dark:bg-gradient-to-br dark:from-emerald-600/20 dark:to-green-500/20 group-hover:bg-emerald-200 dark:group-hover:from-emerald-600/40 dark:group-hover:to-green-500/40 transition-all duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600 dark:text-emerald-400 group-hover:text-emerald-700 dark:group-hover:text-green-300 transition-colors">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-adaptive-primary group-hover:text-emerald-600 dark:group-hover:text-green-300 transition-colors">
-                        Soy profesional
-                      </p>
-                      <p className="text-sm text-adaptive-muted group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
-                        Encontrar trabajos y clientes
-                      </p>
-                    </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-all duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
                   </div>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500 group-hover:text-emerald-500 dark:group-hover:text-green-400 group-hover:translate-x-1 transition-all">
-                    <path d="m9 18 6-6-6-6"/>
-                  </svg>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-green-300 transition-colors duration-200">
+                      Soy profesional
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Encontrar trabajos y clientes
+                    </p>
+                  </div>
                 </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500 group-hover:text-emerald-500 dark:group-hover:text-green-400 group-hover:translate-x-1 transition-all duration-200">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
               </div>
             </button>
           </div>
