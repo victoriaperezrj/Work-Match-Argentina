@@ -18,6 +18,12 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // Premium Design System Colors
+        'dark-bg': '#0A0E27',
+        'dark-secondary': '#151B35',
+        'neon-green': '#00FF88',
+
+        // shadcn/ui base colors
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -66,10 +72,41 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        floating: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        gradientShift: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
+        },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        slideUp: 'slideUp 0.5s ease-out',
+        floating: 'floating 3s ease-in-out infinite',
+        shimmer: 'shimmer 2s infinite',
+        gradientShift: 'gradientShift 3s ease infinite',
+        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      boxShadow: {
+        'glow': '0 8px 32px rgba(0, 102, 255, 0.15), 0 16px 48px rgba(0, 102, 255, 0.1)',
+        'glow-cyan': '0 0 20px rgba(0, 217, 255, 0.3)',
+        'glow-neon': '0 0 20px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.1)',
       },
     },
   },

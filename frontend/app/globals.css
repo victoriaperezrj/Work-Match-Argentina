@@ -4,79 +4,105 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 142.1 76.2% 36.3%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
+    /* Premium Dark Theme (Default) */
+    --background: 222.2 47.4% 6.2%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222.2 47.4% 11.2%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222.2 47.4% 11.2%;
     --popover-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 142.1 70.6% 45.3%;
+    --secondary: 186.6 100% 50%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+    --radius: 0.75rem;
   }
-}
 
-@layer base {
   * {
-    @apply border-border;
+    @apply border-border scroll-smooth;
   }
+
+  html {
+    background: linear-gradient(135deg, #0A0E27 0%, #151B35 100%);
+    min-height: 100vh;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background: linear-gradient(135deg, #0A0E27 0%, #151B35 100%);
+    min-height: 100vh;
   }
 }
 
-/* Legacy utility classes for backward compatibility */
 @layer components {
+  /* Glassmorphism */
+  .glass {
+    @apply bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl;
+  }
+
+  .glass-hover {
+    @apply hover:bg-gray-900/60 hover:border-cyan-400/50 transition-all duration-300;
+  }
+
+  /* Premium Buttons */
   .btn-primary {
-    @apply bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors;
+    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-glow hover:scale-105 active:scale-95 focus:ring-2 focus:ring-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-secondary/90 transition-colors;
+    @apply px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
+  }
+
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-cyan-400 text-cyan-400 rounded-xl bg-transparent transition-all duration-300 hover:bg-cyan-400/10 hover:shadow-glow-cyan;
+  }
+
+  .btn-ghost {
+    @apply px-6 py-3 text-gray-300 rounded-xl transition-all duration-300 hover:text-cyan-300 hover:bg-cyan-300/5;
   }
 
   .btn-danger {
-    @apply bg-destructive text-destructive-foreground font-semibold py-2 px-4 rounded-lg hover:bg-destructive/90 transition-colors;
+    @apply px-6 py-3 bg-gradient-to-r from-red-600 to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
   }
 
+  /* Premium Cards */
+  .card-premium {
+    @apply p-6 bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-xl border border-blue-400/20 rounded-2xl shadow-xl hover:border-cyan-400/50 hover:shadow-glow transition-all duration-300;
+  }
+
+  /* Premium Inputs */
+  .input-premium {
+    @apply w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 focus:bg-gray-900 transition-all duration-300 backdrop-blur-sm;
+  }
+
+  /* Animations */
+  .hover-lift {
+    @apply transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg;
+  }
+
+  .animate-glow {
+    @apply animate-pulse shadow-lg shadow-cyan-500/50;
+  }
+
+  /* Legacy utility classes for backward compatibility */
   .input-field {
-    @apply w-full px-4 py-2 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring;
+    @apply input-premium;
   }
 
   .card-legacy {
-    @apply bg-card text-card-foreground rounded-lg shadow-md p-6;
+    @apply card-premium;
+  }
+
+  .card {
+    @apply card-premium;
   }
 }
