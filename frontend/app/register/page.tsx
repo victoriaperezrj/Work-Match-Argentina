@@ -19,12 +19,14 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [isDemandante, setIsDemandante] = useState(true);
-  const [isProveedor, setIsProveedor] = useState(false);
+  const [accountType, setAccountType] = useState<'demandante' | 'proveedor' | 'ambos'>('demandante');
   const [locationId, setLocationId] = useState('');
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
 
+  // Derived values for API
+  const isDemandante = accountType === 'demandante' || accountType === 'ambos';
+  const isProveedor = accountType === 'proveedor' || accountType === 'ambos';
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -42,11 +44,6 @@ export default function RegisterPage() {
 
     if (password.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
-      return;
-    }
-
-    if (!isDemandante && !isProveedor) {
-      setError('Debes seleccionar al menos un tipo de cuenta');
       return;
     }
 
@@ -228,34 +225,85 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Account Type */}
+            {/* Account Type - 3 Options */}
             <div>
               <label className="block text-sm font-medium text-adaptive-secondary mb-3">
-                Tipo de Cuenta *
+                ¿Qué te gustaría hacer? *
               </label>
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                {/* Option 1: Solo Cliente */}
+                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                  accountType === 'demandante'
+                    ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-500/50'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50/50 dark:hover:bg-blue-900/20'
+                }`}>
                   <input
-                    type="checkbox"
-                    checked={isDemandante}
-                    onChange={(e) => setIsDemandante(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    type="radio"
+                    name="accountType"
+                    checked={accountType === 'demandante'}
+                    onChange={() => setAccountType('demandante')}
+                    className="w-5 h-5 border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
-                  <div>
-                    <p className="font-medium text-adaptive-primary">Necesito servicios</p>
-                    <p className="text-sm text-adaptive-muted">Publicar necesidades y contratar profesionales</p>
+                  <div className="flex-1">
+                    <p className="font-medium text-adaptive-primary">Busco contratar servicios</p>
+                    <p className="text-sm text-adaptive-muted">Publicar necesidades y encontrar profesionales</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
                   </div>
                 </label>
-                <label className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 cursor-pointer hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors">
+
+                {/* Option 2: Solo Profesional */}
+                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                  accountType === 'proveedor'
+                    ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-500/50'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20'
+                }`}>
                   <input
-                    type="checkbox"
-                    checked={isProveedor}
-                    onChange={(e) => setIsProveedor(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                    type="radio"
+                    name="accountType"
+                    checked={accountType === 'proveedor'}
+                    onChange={() => setAccountType('proveedor')}
+                    className="w-5 h-5 border-gray-300 text-emerald-600 focus:ring-emerald-500"
                   />
-                  <div>
-                    <p className="font-medium text-adaptive-primary">Soy profesional</p>
-                    <p className="text-sm text-adaptive-muted">Encontrar trabajos y clientes</p>
+                  <div className="flex-1">
+                    <p className="font-medium text-adaptive-primary">Ofrezco mis servicios</p>
+                    <p className="text-sm text-adaptive-muted">Encontrar trabajos y nuevos clientes</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600 dark:text-emerald-400">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                    </svg>
+                  </div>
+                </label>
+
+                {/* Option 3: Ambos */}
+                <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                  accountType === 'ambos'
+                    ? 'border-purple-400 bg-purple-50 dark:bg-purple-900/30 dark:border-purple-500/50'
+                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 hover:bg-purple-50/50 dark:hover:bg-purple-900/20'
+                }`}>
+                  <input
+                    type="radio"
+                    name="accountType"
+                    checked={accountType === 'ambos'}
+                    onChange={() => setAccountType('ambos')}
+                    className="w-5 h-5 border-gray-300 text-purple-600 focus:ring-purple-500"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-adaptive-primary">Ambas opciones</p>
+                    <p className="text-sm text-adaptive-muted">Contratar y ofrecer servicios</p>
+                  </div>
+                  <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-600/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600 dark:text-purple-400">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
                   </div>
                 </label>
               </div>
@@ -363,14 +411,28 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-adaptive-muted">
-              ¿Ya tienes cuenta?{' '}
-              <Link href="/login" className="text-blue-600 dark:text-cyan-400 hover:underline font-medium">
-                Iniciar Sesión
-              </Link>
-            </p>
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white dark:bg-gray-800 text-adaptive-muted">o</span>
+            </div>
           </div>
+
+          {/* Already have account */}
+          <Link
+            href="/login"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-adaptive-primary font-medium hover:border-blue-400 dark:hover:border-cyan-400 hover:text-blue-600 dark:hover:text-cyan-400 transition-all duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" x2="3" y1="12" y2="12"/>
+            </svg>
+            Ya tengo cuenta - Iniciar Sesión
+          </Link>
         </div>
 
         {/* Footer */}
