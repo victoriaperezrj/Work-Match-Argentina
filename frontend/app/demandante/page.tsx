@@ -10,8 +10,14 @@ import { RoleSwitcher } from '@/components/role-switcher';
 export default function DemandanteDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const requests = useRequestsStore((state) => state.requests);
+  const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed'>('all');
+
+  const handleCancelRequest = (requestId: string) => {
+    updateRequest(requestId, {
+      status: 'Cancelado',
+    });
+  };
 
   const handleLogout = () => {
     logout();
@@ -156,7 +162,7 @@ export default function DemandanteDashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-sm mb-4">
                   <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
                     <p className="text-adaptive-muted text-xs mb-1">Ubicación</p>
                     <p className="font-medium text-adaptive-secondary truncate">
@@ -184,6 +190,39 @@ export default function DemandanteDashboard() {
                     </div>
                   )}
                 </div>
+
+                {/* Cancel button for pending requests */}
+                {request.status === 'Pendiente' && (
+                  <button
+                    onClick={() => handleCancelRequest(request.id)}
+                    className="btn-danger text-sm flex items-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 6 6 18"/>
+                      <path d="m6 6 12 12"/>
+                    </svg>
+                    Cancelar Solicitud
+                  </button>
+                )}
+
+                {request.status === 'Completado' && (
+                  <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5"/>
+                    </svg>
+                    Trabajo Completado
+                  </div>
+                )}
+
+                {request.status === 'Cancelado' && (
+                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-medium text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 6 6 18"/>
+                      <path d="m6 6 12 12"/>
+                    </svg>
+                    Solicitud Cancelada
+                  </div>
+                )}
               </div>
             ))}
           </div>
