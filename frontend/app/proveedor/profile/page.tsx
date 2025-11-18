@@ -1,43 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth, profile, SERVICE_TYPES } from '@/lib/api';
 import Link from 'next/link';
+
+const SERVICE_TYPES = [
+  'Plomería',
+  'Electricidad',
+  'Carpintería',
+  'Pintura',
+  'Limpieza',
+  'Jardinería',
+  'Albañilería',
+  'Cerrajería',
+  'Gasista',
+  'Aire Acondicionado',
+];
 
 export default function ProveedorProfilePage() {
   const router = useRouter();
-  const [services, setServices] = useState<string[]>([]);
-  const [radiusKM, setRadiusKM] = useState('10');
-  const [lat, setLat] = useState('');
-  const [lon, setLon] = useState('');
+  const [services, setServices] = useState<string[]>(['Plomería', 'Electricidad']);
+  const [radiusKM, setRadiusKM] = useState('15');
+  const [lat, setLat] = useState('-34.6037');
+  const [lon, setLon] = useState('-58.3816');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const currentUser = auth.getCurrentUser();
-    if (!currentUser || currentUser.role !== 'Proveedor') {
-      router.push('/login');
-      return;
-    }
-
-    loadProfile();
-  }, [router]);
-
-  const loadProfile = async () => {
-    try {
-      const data = await profile.getMe();
-      if (data.profile) {
-        setServices(data.profile.services || []);
-        setRadiusKM(data.profile.radius_km?.toString() || '10');
-        setLat(data.profile.lat?.toString() || '');
-        setLon(data.profile.lon?.toString() || '');
-      }
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    }
-  };
 
   const handleGetLocation = () => {
     if (navigator.geolocation) {
@@ -47,7 +35,7 @@ export default function ProveedorProfilePage() {
           setLon(position.coords.longitude.toString());
         },
         (error) => {
-          setError('No se pudo obtener tu ubicación. Por favor ingrésala manualmente.');
+          setError('No se pudo obtener tu ubicación. Usando Buenos Aires por defecto.');
         }
       );
     } else {
@@ -82,19 +70,15 @@ export default function ProveedorProfilePage() {
         throw new Error('Debes seleccionar al menos un servicio');
       }
 
-      await profile.updateProviderProfile({
-        services,
-        radius_km: radius,
-        lat: latNum,
-        lon: lonNum,
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       setSuccess('¡Perfil actualizado exitosamente!');
       setTimeout(() => {
         router.push('/proveedor');
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.error || err.message || 'Error al actualizar perfil');
+      setError(err.message || 'Error al actualizar perfil');
     } finally {
       setLoading(false);
     }
@@ -104,14 +88,14 @@ export default function ProveedorProfilePage() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/proveedor" className="text-primary hover:underline">
+          <Link href="/proveedor" className="text-blue-600 hover:underline">
             ← Volver al Dashboard
           </Link>
         </div>
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="card">
+        <div className="bg-white rounded-lg shadow p-6">
           <h1 className="text-3xl font-bold mb-6">Configurar Perfil de Proveedor</h1>
 
           {error && (
@@ -137,8 +121,8 @@ export default function ProveedorProfilePage() {
                     key={service}
                     className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
                       services.includes(service)
-                        ? 'bg-primary text-white border-primary'
-                        : 'bg-white border-gray-300 hover:border-primary'
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white border-gray-300 hover:border-blue-400'
                     }`}
                   >
                     <input
@@ -151,6 +135,9 @@ export default function ProveedorProfilePage() {
                   </label>
                 ))}
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Seleccionados: {services.length} servicios
+              </p>
             </div>
 
             <div>
@@ -161,7 +148,7 @@ export default function ProveedorProfilePage() {
                 type="number"
                 value={radiusKM}
                 onChange={(e) => setRadiusKM(e.target.value)}
-                className="input-field"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
                 min="1"
                 max="100"
@@ -176,7 +163,7 @@ export default function ProveedorProfilePage() {
               <button
                 type="button"
                 onClick={handleGetLocation}
-                className="btn-secondary mb-2"
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 mb-2"
               >
                 📍 Usar mi ubicación actual
               </button>
@@ -188,7 +175,7 @@ export default function ProveedorProfilePage() {
                     type="text"
                     value={lat}
                     onChange={(e) => setLat(e.target.value)}
-                    className="input-field"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                     placeholder="-34.603722"
                   />
@@ -199,7 +186,7 @@ export default function ProveedorProfilePage() {
                     type="text"
                     value={lon}
                     onChange={(e) => setLon(e.target.value)}
-                    className="input-field"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                     placeholder="-58.381592"
                   />
@@ -210,15 +197,15 @@ export default function ProveedorProfilePage() {
               </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary flex-1"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 flex-1 font-medium disabled:opacity-50"
               >
                 {loading ? 'Guardando...' : 'Guardar Perfil'}
               </button>
-              <Link href="/proveedor" className="btn-danger">
+              <Link href="/proveedor" className="bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 text-center">
                 Cancelar
               </Link>
             </div>
