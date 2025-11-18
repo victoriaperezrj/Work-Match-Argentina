@@ -4,70 +4,24 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
-
-interface ServiceRequest {
-  id: number;
-  description: string;
-  service_type: string;
-  location_id: string;
-  status: string;
-  price_quoted: number | null;
-  created_at: string;
-  provider_id: number | null;
-}
-
-// Mock data for testing
-const mockRequests: ServiceRequest[] = [
-  {
-    id: 1,
-    description: 'Necesito reparar una canilla que gotea en el baño principal',
-    service_type: 'Plomería',
-    location_id: 'san-luis-capital',
-    status: 'Pendiente',
-    price_quoted: 4500,
-    created_at: '2024-01-15T10:30:00Z',
-    provider_id: null,
-  },
-  {
-    id: 2,
-    description: 'Instalación de 3 tomas corriente nuevas en living',
-    service_type: 'Electricidad',
-    location_id: 'villa-mercedes',
-    status: 'Asignado',
-    price_quoted: 8200,
-    created_at: '2024-01-14T15:00:00Z',
-    provider_id: 5,
-  },
-  {
-    id: 3,
-    description: 'Pintar habitación de 4x4 metros, incluye techo',
-    service_type: 'Pintura',
-    location_id: 'merlo',
-    status: 'Completado',
-    price_quoted: 15000,
-    created_at: '2024-01-10T09:00:00Z',
-    provider_id: 3,
-  },
-  {
-    id: 4,
-    description: 'Cortar césped y podar arbustos del jardín frontal',
-    service_type: 'Jardinería',
-    location_id: 'la-punta',
-    status: 'Pendiente',
-    price_quoted: 6000,
-    created_at: '2024-01-16T08:00:00Z',
-    provider_id: null,
-  },
-];
+import { useAuthStore, useRequestsStore } from '@/lib/stores';
+import { RoleSwitcher } from '@/components/role-switcher';
 
 export default function DemandanteDashboard() {
   const router = useRouter();
-  const [myRequests, setMyRequests] = useState<ServiceRequest[]>(mockRequests);
+  const { user, logout } = useAuthStore();
+  const requests = useRequestsStore((state) => state.requests);
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed'>('all');
 
   const handleLogout = () => {
+    logout();
     router.push('/login');
   };
+
+  // Filter requests for current user (in mock mode, show all)
+  const myRequests = user
+    ? requests.filter(r => r.demandante_id === user.id || r.demandante_id.startsWith('mock'))
+    : requests;
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -117,7 +71,10 @@ export default function DemandanteDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-adaptive-muted">juan@demandante.com</span>
+            <RoleSwitcher />
+            <span className="text-sm text-adaptive-muted hidden sm:block">
+              {user?.email || 'usuario@ejemplo.com'}
+            </span>
             <button
               onClick={handleLogout}
               className="btn-ghost text-sm px-4 py-2"
@@ -220,7 +177,7 @@ export default function DemandanteDashboard() {
                   {request.provider_id && (
                     <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
                       <p className="text-adaptive-muted text-xs mb-1">Proveedor</p>
-                      <p className="font-medium text-blue-600 dark:text-cyan-400">ID: {request.provider_id}</p>
+                      <p className="font-medium text-blue-600 dark:text-cyan-400">Asignado</p>
                     </div>
                   )}
                 </div>

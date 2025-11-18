@@ -1,87 +1,32 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
-
-interface ServiceRequest {
-  id: number;
-  demandante_id: number;
-  description: string;
-  service_type: string;
-  location_id: string;
-  status: string;
-  price_quoted: number | null;
-  created_at: string;
-}
-
-// Mock data for testing
-const mockPendingRequests: ServiceRequest[] = [
-  {
-    id: 5,
-    demandante_id: 1,
-    description: 'Arreglo urgente de cañería rota en cocina, hay pérdida de agua',
-    service_type: 'Plomería',
-    location_id: 'san-luis-capital',
-    status: 'Pendiente',
-    price_quoted: 7500,
-    created_at: '2024-01-16T14:00:00Z',
-  },
-  {
-    id: 6,
-    demandante_id: 2,
-    description: 'Cambio de tablero eléctrico completo, casa antigua',
-    service_type: 'Electricidad',
-    location_id: 'juana-koslay',
-    status: 'Pendiente',
-    price_quoted: 25000,
-    created_at: '2024-01-16T11:30:00Z',
-  },
-  {
-    id: 7,
-    demandante_id: 3,
-    description: 'Instalación de termo tanque solar 150 litros',
-    service_type: 'Plomería',
-    location_id: 'potrero-funes',
-    status: 'Pendiente',
-    price_quoted: 18000,
-    created_at: '2024-01-15T16:45:00Z',
-  },
-  {
-    id: 8,
-    demandante_id: 4,
-    description: 'Pintura exterior de fachada, 2 pisos, 120m2 aprox',
-    service_type: 'Pintura',
-    location_id: 'la-punta',
-    status: 'Pendiente',
-    price_quoted: 45000,
-    created_at: '2024-01-15T09:00:00Z',
-  },
-  {
-    id: 9,
-    demandante_id: 5,
-    description: 'Mantenimiento mensual de jardín 200m2',
-    service_type: 'Jardinería',
-    location_id: 'villa-mercedes',
-    status: 'Pendiente',
-    price_quoted: 12000,
-    created_at: '2024-01-14T13:20:00Z',
-  },
-];
+import { useAuthStore, useRequestsStore } from '@/lib/stores';
+import { RoleSwitcher } from '@/components/role-switcher';
 
 export default function ProveedorDashboard() {
   const router = useRouter();
-  const [pendingRequests, setPendingRequests] = useState<ServiceRequest[]>(mockPendingRequests);
-  const [acceptedJobs, setAcceptedJobs] = useState<number[]>([]);
+  const { user, logout } = useAuthStore();
+  const { requests, updateRequest } = useRequestsStore();
 
   const handleLogout = () => {
+    logout();
     router.push('/login');
   };
 
-  const handleAcceptRequest = (requestId: number) => {
-    setAcceptedJobs([...acceptedJobs, requestId]);
-    setPendingRequests(pendingRequests.filter(r => r.id !== requestId));
+  // Get pending requests (available jobs for providers)
+  const pendingRequests = requests.filter(r => r.status === 'Pendiente');
+
+  // Get jobs accepted by this provider
+  const acceptedJobs = requests.filter(r => r.provider_id === user?.id);
+
+  const handleAcceptRequest = (requestId: string) => {
+    updateRequest(requestId, {
+      status: 'Asignado',
+      provider_id: user?.id || 'mock-provider',
+    });
   };
 
   const stats = [
@@ -92,14 +37,14 @@ export default function ProveedorDashboard() {
       textColor: 'text-blue-600 dark:text-cyan-400',
     },
     {
-      label: 'Aceptados Hoy',
+      label: 'Mis Trabajos',
       value: acceptedJobs.length,
       color: 'from-emerald-600 to-green-500',
       textColor: 'text-emerald-600 dark:text-emerald-400',
     },
     {
       label: 'Tu Radio',
-      value: '15 km',
+      value: `${user?.radius_km || 15} km`,
       color: 'from-amber-600 to-yellow-500',
       textColor: 'text-amber-600 dark:text-amber-400',
     },
@@ -122,15 +67,18 @@ export default function ProveedorDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/proveedor/profile" className="btn-ghost text-sm px-4 py-2">
-              Configurar Perfil
+            <RoleSwitcher />
+            <Link href="/proveedor/profile" className="btn-ghost text-sm px-4 py-2 hidden sm:block">
+              Mi Perfil
             </Link>
-            <span className="text-sm text-adaptive-muted">carlos@proveedor.com</span>
+            <span className="text-sm text-adaptive-muted hidden md:block">
+              {user?.email || 'usuario@ejemplo.com'}
+            </span>
             <button
               onClick={handleLogout}
               className="btn-ghost text-sm px-4 py-2"
             >
-              Cerrar Sesión
+              Salir
             </button>
           </div>
         </div>
