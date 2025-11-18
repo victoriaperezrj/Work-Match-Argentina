@@ -1,12 +1,17 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Iniciar Sesión',
-  description: 'Inicia sesión en WorkMatch Argentina para conectar con artesanos o encontrar trabajos.',
-}
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/stores';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const mockLogin = useAuthStore((state) => state.mockLogin);
+
+  const handleRoleSelect = (role: 'demandante' | 'proveedor') => {
+    mockLogin(role);
+    router.push(`/${role}`);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated Background Blobs */}
@@ -41,7 +46,10 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             {/* Client Option */}
-            <Link href="/demandante" className="block group">
+            <button
+              onClick={() => handleRoleSelect('demandante')}
+              className="w-full text-left group"
+            >
               <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-400/50 transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -65,10 +73,13 @@ export default function LoginPage() {
                   </svg>
                 </div>
               </div>
-            </Link>
+            </button>
 
             {/* Artisan Option */}
-            <Link href="/proveedor" className="block group">
+            <button
+              onClick={() => handleRoleSelect('proveedor')}
+              className="w-full text-left group"
+            >
               <div className="p-5 rounded-xl border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:border-emerald-300 dark:hover:border-emerald-400/50 transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -91,7 +102,7 @@ export default function LoginPage() {
                   </svg>
                 </div>
               </div>
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -103,5 +114,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
