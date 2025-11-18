@@ -77,11 +77,11 @@ export default function NewRequestPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation */}
+      {/* Navigation - Mobile Optimized */}
       <nav className="glass border-b border-gray-200 dark:border-gray-700/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/demandante" className="text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-300 transition-colors flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <Link href="/demandante" className="text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-300 transition-colors flex items-center gap-2 text-sm sm:text-base">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" className="sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
             Volver al Dashboard
@@ -89,10 +89,10 @@ export default function NewRequestPage() {
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="glass p-8 animate-slideUp">
-          <h1 className="text-3xl font-bold text-adaptive-primary mb-2">Nueva Solicitud</h1>
-          <p className="text-adaptive-secondary mb-8">Describe el servicio que necesitas</p>
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
+        <div className="glass p-4 sm:p-8 animate-slideUp">
+          <h1 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Nueva Solicitud</h1>
+          <p className="text-sm sm:text-base text-adaptive-secondary mb-6 sm:mb-8">Describe el servicio que necesitas</p>
 
           {error && (
             <div className="bg-red-100 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6">
@@ -100,9 +100,9 @@ export default function NewRequestPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Tipo de Servicio</label>
+              <label className="block text-xs sm:text-sm font-medium text-adaptive-secondary mb-2">Tipo de Servicio</label>
               <select
                 value={serviceType}
                 onChange={(e) => setServiceType(e.target.value)}
@@ -118,18 +118,18 @@ export default function NewRequestPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Descripción del Trabajo</label>
+              <label className="block text-xs sm:text-sm font-medium text-adaptive-secondary mb-2">Descripción del Trabajo</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="input-premium min-h-[120px] resize-none"
+                className="input-premium min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base"
                 required
                 placeholder="Describe detalladamente el trabajo que necesitas..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Ubicación del Trabajo</label>
+              <label className="block text-xs sm:text-sm font-medium text-adaptive-secondary mb-2">Ubicación del Trabajo</label>
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
@@ -152,15 +152,15 @@ export default function NewRequestPage() {
               </p>
             </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary flex-1"
+                className="btn-primary flex-1 order-1 sm:order-1"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
@@ -170,7 +170,7 @@ export default function NewRequestPage() {
                   'Crear Solicitud'
                 )}
               </button>
-              <Link href="/demandante" className="btn-danger">
+              <Link href="/demandante" className="btn-danger text-center order-2 sm:order-2">
                 Cancelar
               </Link>
             </div>
