@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { getLocationDisplayName } from '@/lib/constants/locations';
 
 interface ServiceRequest {
   id: number;
   demandante_id: number;
   description: string;
   service_type: string;
-  lat: number;
-  lon: number;
+  location_id: string;
   status: string;
   price_quoted: number | null;
   created_at: string;
@@ -23,8 +23,7 @@ const mockPendingRequests: ServiceRequest[] = [
     demandante_id: 1,
     description: 'Arreglo urgente de cañería rota en cocina, hay pérdida de agua',
     service_type: 'Plomería',
-    lat: -34.6091,
-    lon: -58.3820,
+    location_id: 'san-luis-capital',
     status: 'Pendiente',
     price_quoted: 7500,
     created_at: '2024-01-16T14:00:00Z',
@@ -34,8 +33,7 @@ const mockPendingRequests: ServiceRequest[] = [
     demandante_id: 2,
     description: 'Cambio de tablero eléctrico completo, casa antigua',
     service_type: 'Electricidad',
-    lat: -34.5995,
-    lon: -58.3750,
+    location_id: 'juana-koslay',
     status: 'Pendiente',
     price_quoted: 25000,
     created_at: '2024-01-16T11:30:00Z',
@@ -45,8 +43,7 @@ const mockPendingRequests: ServiceRequest[] = [
     demandante_id: 3,
     description: 'Instalación de termo tanque solar 150 litros',
     service_type: 'Plomería',
-    lat: -34.6120,
-    lon: -58.4100,
+    location_id: 'potrero-funes',
     status: 'Pendiente',
     price_quoted: 18000,
     created_at: '2024-01-15T16:45:00Z',
@@ -56,8 +53,7 @@ const mockPendingRequests: ServiceRequest[] = [
     demandante_id: 4,
     description: 'Pintura exterior de fachada, 2 pisos, 120m2 aprox',
     service_type: 'Pintura',
-    lat: -34.5850,
-    lon: -58.4200,
+    location_id: 'la-punta',
     status: 'Pendiente',
     price_quoted: 45000,
     created_at: '2024-01-15T09:00:00Z',
@@ -67,8 +63,7 @@ const mockPendingRequests: ServiceRequest[] = [
     demandante_id: 5,
     description: 'Mantenimiento mensual de jardín 200m2',
     service_type: 'Jardinería',
-    lat: -34.6200,
-    lon: -58.3650,
+    location_id: 'villa-mercedes',
     status: 'Pendiente',
     price_quoted: 12000,
     created_at: '2024-01-14T13:20:00Z',
@@ -94,26 +89,26 @@ export default function ProveedorDashboard() {
       label: 'Disponibles',
       value: pendingRequests.length,
       color: 'from-blue-600 to-cyan-500',
-      textColor: 'text-cyan-400',
+      textColor: 'text-blue-600 dark:text-cyan-400',
     },
     {
       label: 'Aceptados Hoy',
       value: acceptedJobs.length,
       color: 'from-emerald-600 to-green-500',
-      textColor: 'text-emerald-400',
+      textColor: 'text-emerald-600 dark:text-emerald-400',
     },
     {
       label: 'Tu Radio',
       value: '15 km',
       color: 'from-amber-600 to-yellow-500',
-      textColor: 'text-amber-400',
+      textColor: 'text-amber-600 dark:text-amber-400',
     },
   ];
 
   return (
     <div className="min-h-screen">
       {/* Premium Navigation */}
-      <nav className="glass border-b border-gray-700/50 sticky top-0 z-50">
+      <nav className="glass border-b border-gray-200 dark:border-gray-700/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-green-500 flex items-center justify-center shadow-lg">
@@ -122,15 +117,15 @@ export default function ProveedorDashboard() {
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">WorkMatch</h1>
-              <p className="text-xs text-emerald-400">Proveedor</p>
+              <h1 className="text-xl font-bold text-adaptive-primary">WorkMatch</h1>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400">Proveedor</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/proveedor/profile" className="btn-ghost text-sm px-4 py-2">
               Configurar Perfil
             </Link>
-            <span className="text-sm text-gray-400">carlos@proveedor.com</span>
+            <span className="text-sm text-adaptive-muted">carlos@proveedor.com</span>
             <button
               onClick={handleLogout}
               className="btn-ghost text-sm px-4 py-2"
@@ -145,8 +140,8 @@ export default function ProveedorDashboard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8 animate-slideUp">
           <div>
-            <h2 className="text-3xl font-bold text-white mb-2">Trabajos Disponibles</h2>
-            <p className="text-gray-400">{pendingRequests.length} trabajos cerca de tu ubicación</p>
+            <h2 className="text-3xl font-bold text-adaptive-primary mb-2">Trabajos Disponibles</h2>
+            <p className="text-adaptive-secondary">{pendingRequests.length} trabajos cerca de tu ubicación</p>
           </div>
         </div>
 
@@ -179,20 +174,20 @@ export default function ProveedorDashboard() {
                 )}
               </div>
               <p className={`text-3xl font-bold ${stat.textColor} mb-1`}>{stat.value}</p>
-              <p className="text-sm text-gray-400">{stat.label}</p>
+              <p className="text-sm text-adaptive-muted">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {pendingRequests.length === 0 ? (
           <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
-            <div className="w-16 h-16 rounded-2xl bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.3-4.3"/>
               </svg>
             </div>
-            <p className="text-gray-400 mb-6">
+            <p className="text-adaptive-secondary mb-6">
               No hay trabajos pendientes que coincidan con tu perfil
             </p>
             <Link href="/proveedor/profile" className="btn-secondary inline-flex items-center gap-2">
@@ -214,39 +209,39 @@ export default function ProveedorDashboard() {
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-semibold text-white">{request.service_type}</h3>
-                      <span className="px-3 py-1 rounded-full text-sm font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                      <h3 className="text-xl font-semibold text-adaptive-primary">{request.service_type}</h3>
+                      <span className="px-3 py-1 rounded-full text-sm font-medium badge-pending">
                         Pendiente
                       </span>
                     </div>
-                    <p className="text-gray-400">{request.description}</p>
+                    <p className="text-adaptive-secondary">{request.description}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
-                  <div className="p-3 rounded-lg bg-gray-900/50">
-                    <p className="text-gray-500 text-xs mb-1">Ubicación</p>
-                    <p className="font-medium text-gray-300">
-                      {request.lat.toFixed(4)}, {request.lon.toFixed(4)}
+                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                    <p className="text-adaptive-muted text-xs mb-1">Ubicación</p>
+                    <p className="font-medium text-adaptive-secondary">
+                      {getLocationDisplayName(request.location_id)}
                     </p>
                   </div>
                   {request.price_quoted && (
-                    <div className="p-3 rounded-lg bg-gray-900/50">
-                      <p className="text-gray-500 text-xs mb-1">Precio Estimado</p>
-                      <p className="font-medium text-emerald-400">
+                    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                      <p className="text-adaptive-muted text-xs mb-1">Precio Estimado</p>
+                      <p className="font-medium text-emerald-600 dark:text-emerald-400">
                         ${request.price_quoted.toLocaleString('es-AR')} ARS
                       </p>
                     </div>
                   )}
-                  <div className="p-3 rounded-lg bg-gray-900/50">
-                    <p className="text-gray-500 text-xs mb-1">Publicado</p>
-                    <p className="font-medium text-gray-300">
+                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                    <p className="text-adaptive-muted text-xs mb-1">Publicado</p>
+                    <p className="font-medium text-adaptive-secondary">
                       {new Date(request.created_at).toLocaleDateString('es-AR')}
                     </p>
                   </div>
-                  <div className="p-3 rounded-lg bg-gray-900/50">
-                    <p className="text-gray-500 text-xs mb-1">Distancia</p>
-                    <p className="font-medium text-cyan-400">{(Math.random() * 10 + 1).toFixed(1)} km</p>
+                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                    <p className="text-adaptive-muted text-xs mb-1">Distancia</p>
+                    <p className="font-medium text-blue-600 dark:text-cyan-400">{(Math.random() * 10 + 1).toFixed(1)} km</p>
                   </div>
                 </div>
 

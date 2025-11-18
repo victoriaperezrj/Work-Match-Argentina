@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { SAN_LUIS_LOCATIONS, LOCATIONS_BY_DEPARTMENT, DEPARTMENTS, getLocationDisplayName } from '@/lib/constants/locations';
 
 const SERVICE_TYPES = [
   'Plomería',
@@ -21,31 +22,10 @@ export default function NewRequestPage() {
   const router = useRouter();
   const [description, setDescription] = useState('');
   const [serviceType, setServiceType] = useState(SERVICE_TYPES[0]);
-  const [lat, setLat] = useState('');
-  const [lon, setLon] = useState('');
+  const [locationId, setLocationId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLat(position.coords.latitude.toString());
-          setLon(position.coords.longitude.toString());
-        },
-        (error) => {
-          setLat('-34.6037');
-          setLon('-58.3816');
-          setError('Usando ubicación por defecto: Buenos Aires');
-        }
-      );
-    } else {
-      setLat('-34.6037');
-      setLon('-58.3816');
-      setError('Usando ubicación por defecto: Buenos Aires');
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,13 +33,15 @@ export default function NewRequestPage() {
     setLoading(true);
 
     try {
-      const latNum = parseFloat(lat);
-      const lonNum = parseFloat(lon);
-
-      if (isNaN(latNum) || isNaN(lonNum)) {
-        throw new Error('Latitud y Longitud deben ser números válidos');
+      if (!locationId) {
+        throw new Error('Debes seleccionar una ubicación');
       }
 
+      if (!description.trim()) {
+        throw new Error('Debes describir el trabajo que necesitas');
+      }
+
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setSuccess(true);
@@ -83,11 +65,11 @@ export default function NewRequestPage() {
               <path d="M20 6 9 17l-5-5"/>
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">¡Solicitud Creada!</h2>
-          <p className="text-gray-400 mb-4">
-            Tu solicitud ha sido publicada. Los proveedores cercanos serán notificados.
+          <h2 className="text-2xl font-bold text-adaptive-primary mb-2">¡Solicitud Creada!</h2>
+          <p className="text-adaptive-secondary mb-4">
+            Tu solicitud ha sido publicada. Los proveedores en {getLocationDisplayName(locationId)} serán notificados.
           </p>
-          <p className="text-sm text-gray-500">Redirigiendo al dashboard...</p>
+          <p className="text-sm text-adaptive-muted">Redirigiendo al dashboard...</p>
         </div>
       </div>
     );
@@ -96,9 +78,9 @@ export default function NewRequestPage() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="glass border-b border-gray-700/50 sticky top-0 z-50">
+      <nav className="glass border-b border-gray-200 dark:border-gray-700/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/demandante" className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-2">
+          <Link href="/demandante" className="text-blue-600 dark:text-cyan-400 hover:text-blue-700 dark:hover:text-cyan-300 transition-colors flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
@@ -109,18 +91,18 @@ export default function NewRequestPage() {
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="glass p-8 animate-slideUp">
-          <h1 className="text-3xl font-bold text-white mb-2">Nueva Solicitud</h1>
-          <p className="text-gray-400 mb-8">Describe el servicio que necesitas</p>
+          <h1 className="text-3xl font-bold text-adaptive-primary mb-2">Nueva Solicitud</h1>
+          <p className="text-adaptive-secondary mb-8">Describe el servicio que necesitas</p>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl mb-6">
+            <div className="bg-red-100 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Tipo de Servicio</label>
+              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Tipo de Servicio</label>
               <select
                 value={serviceType}
                 onChange={(e) => setServiceType(e.target.value)}
@@ -128,7 +110,7 @@ export default function NewRequestPage() {
                 required
               >
                 {SERVICE_TYPES.map((type) => (
-                  <option key={type} value={type} className="bg-gray-900">
+                  <option key={type} value={type} className="bg-white dark:bg-gray-900">
                     {type}
                   </option>
                 ))}
@@ -136,7 +118,7 @@ export default function NewRequestPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Descripción del Trabajo</label>
+              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Descripción del Trabajo</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -147,45 +129,26 @@ export default function NewRequestPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Ubicación del Trabajo</label>
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                className="btn-ghost text-sm mb-4 flex items-center gap-2"
+              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Ubicación del Trabajo</label>
+              <select
+                value={locationId}
+                onChange={(e) => setLocationId(e.target.value)}
+                className="input-premium"
+                required
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Usar mi ubicación actual
-              </button>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Latitud</label>
-                  <input
-                    type="text"
-                    value={lat}
-                    onChange={(e) => setLat(e.target.value)}
-                    className="input-premium"
-                    required
-                    placeholder="-34.603722"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Longitud</label>
-                  <input
-                    type="text"
-                    value={lon}
-                    onChange={(e) => setLon(e.target.value)}
-                    className="input-premium"
-                    required
-                    placeholder="-58.381592"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Ejemplo: Buenos Aires: -34.603722, -58.381592
+                <option value="" className="bg-white dark:bg-gray-900">Selecciona una localidad...</option>
+                {DEPARTMENTS.map((department) => (
+                  <optgroup key={department} label={department} className="bg-white dark:bg-gray-900">
+                    {LOCATIONS_BY_DEPARTMENT[department].map((location) => (
+                      <option key={location.id} value={location.id} className="bg-white dark:bg-gray-900">
+                        {location.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <p className="text-xs text-adaptive-muted mt-2">
+                Provincia de San Luis • Pronto más provincias disponibles
               </p>
             </div>
 

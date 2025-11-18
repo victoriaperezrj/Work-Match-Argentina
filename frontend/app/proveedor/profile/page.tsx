@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { LOCATIONS_BY_DEPARTMENT, DEPARTMENTS, getLocationDisplayName } from '@/lib/constants/locations';
 
 const SERVICE_TYPES = [
   'Plomería',
@@ -21,27 +22,10 @@ export default function ProveedorProfilePage() {
   const router = useRouter();
   const [services, setServices] = useState<string[]>(['Plomería', 'Electricidad']);
   const [radiusKM, setRadiusKM] = useState('15');
-  const [lat, setLat] = useState('-34.6037');
-  const [lon, setLon] = useState('-58.3816');
+  const [locationId, setLocationId] = useState('san-luis-capital');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleGetLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLat(position.coords.latitude.toString());
-          setLon(position.coords.longitude.toString());
-        },
-        (error) => {
-          setError('No se pudo obtener tu ubicación. Usando Buenos Aires por defecto.');
-        }
-      );
-    } else {
-      setError('Tu navegador no soporta geolocalización');
-    }
-  };
 
   const handleServiceToggle = (service: string) => {
     if (services.includes(service)) {
@@ -58,18 +42,15 @@ export default function ProveedorProfilePage() {
     setLoading(true);
 
     try {
-      const latNum = parseFloat(lat);
-      const lonNum = parseFloat(lon);
-      const radius = parseInt(radiusKM);
-
-      if (isNaN(latNum) || isNaN(lonNum)) {
-        throw new Error('Latitud y Longitud deben ser números válidos');
-      }
-
       if (services.length === 0) {
         throw new Error('Debes seleccionar al menos un servicio');
       }
 
+      if (!locationId) {
+        throw new Error('Debes seleccionar tu ubicación');
+      }
+
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setSuccess('¡Perfil actualizado exitosamente!');
@@ -86,9 +67,9 @@ export default function ProveedorProfilePage() {
   return (
     <div className="min-h-screen">
       {/* Navigation */}
-      <nav className="glass border-b border-gray-700/50 sticky top-0 z-50">
+      <nav className="glass border-b border-gray-200 dark:border-gray-700/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/proveedor" className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-2">
+          <Link href="/proveedor" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
@@ -99,24 +80,24 @@ export default function ProveedorProfilePage() {
 
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="glass p-8 animate-slideUp">
-          <h1 className="text-3xl font-bold text-white mb-2">Configurar Perfil</h1>
-          <p className="text-gray-400 mb-8">Personaliza tus servicios y área de cobertura</p>
+          <h1 className="text-3xl font-bold text-adaptive-primary mb-2">Configurar Perfil</h1>
+          <p className="text-adaptive-secondary mb-8">Personaliza tus servicios y área de cobertura</p>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-xl mb-6">
+            <div className="bg-red-100 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 px-4 py-3 rounded-xl mb-6">
+            <div className="bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 px-4 py-3 rounded-xl mb-6">
               {success}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-4">
+              <label className="block text-sm font-medium text-adaptive-secondary mb-4">
                 Servicios que Ofrezco
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -125,8 +106,8 @@ export default function ProveedorProfilePage() {
                     key={service}
                     className={`flex items-center p-4 rounded-xl cursor-pointer transition-all duration-300 ${
                       services.includes(service)
-                        ? 'bg-gradient-to-r from-emerald-600/30 to-green-500/30 border border-emerald-400/50 text-emerald-300'
-                        : 'bg-gray-900/50 border border-gray-700/50 text-gray-400 hover:border-emerald-400/30'
+                        ? 'bg-emerald-100 dark:bg-gradient-to-r dark:from-emerald-600/30 dark:to-green-500/30 border border-emerald-300 dark:border-emerald-400/50 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700/50 text-adaptive-secondary hover:border-emerald-300 dark:hover:border-emerald-400/30'
                     }`}
                   >
                     <input
@@ -138,7 +119,7 @@ export default function ProveedorProfilePage() {
                     <span className={`w-5 h-5 rounded border mr-3 flex items-center justify-center ${
                       services.includes(service)
                         ? 'bg-emerald-500 border-emerald-500'
-                        : 'border-gray-600'
+                        : 'border-gray-300 dark:border-gray-600'
                     }`}>
                       {services.includes(service) && (
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -150,13 +131,13 @@ export default function ProveedorProfilePage() {
                   </label>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mt-3">
+              <p className="text-xs text-adaptive-muted mt-3">
                 Seleccionados: {services.length} servicios
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-adaptive-secondary mb-2">
                 Radio de Cobertura (km)
               </label>
               <input
@@ -168,51 +149,32 @@ export default function ProveedorProfilePage() {
                 min="1"
                 max="100"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-adaptive-muted mt-2">
                 Los trabajos dentro de este radio desde tu ubicación aparecerán en tu lista
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Mi Ubicación</label>
-              <button
-                type="button"
-                onClick={handleGetLocation}
-                className="btn-ghost text-sm mb-4 flex items-center gap-2"
+              <label className="block text-sm font-medium text-adaptive-secondary mb-2">Mi Ubicación</label>
+              <select
+                value={locationId}
+                onChange={(e) => setLocationId(e.target.value)}
+                className="input-premium"
+                required
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-                Usar mi ubicación actual
-              </button>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Latitud</label>
-                  <input
-                    type="text"
-                    value={lat}
-                    onChange={(e) => setLat(e.target.value)}
-                    className="input-premium"
-                    required
-                    placeholder="-34.603722"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-500 mb-1">Longitud</label>
-                  <input
-                    type="text"
-                    value={lon}
-                    onChange={(e) => setLon(e.target.value)}
-                    className="input-premium"
-                    required
-                    placeholder="-58.381592"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Ejemplo: Buenos Aires: -34.603722, -58.381592
+                <option value="" className="bg-white dark:bg-gray-900">Selecciona tu localidad...</option>
+                {DEPARTMENTS.map((department) => (
+                  <optgroup key={department} label={department} className="bg-white dark:bg-gray-900">
+                    {LOCATIONS_BY_DEPARTMENT[department].map((location) => (
+                      <option key={location.id} value={location.id} className="bg-white dark:bg-gray-900">
+                        {location.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <p className="text-xs text-adaptive-muted mt-2">
+                Provincia de San Luis • Pronto más provincias disponibles
               </p>
             </div>
 

@@ -3,28 +3,53 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light Theme (Default) */
   :root {
-    /* Premium Dark Theme (Default) */
-    --background: 222.2 47.4% 6.2%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 47.4% 11.2%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 47.4% 11.2%;
-    --popover-foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
     --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 186.6 100% 50%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 50.6%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 186.6 100% 42%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217.2 91.2% 59.8%;
     --radius: 0.75rem;
+  }
+
+  /* Dark Theme (System Preference) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 222.2 47.4% 6.2%;
+      --foreground: 210 40% 98%;
+      --card: 222.2 47.4% 11.2%;
+      --card-foreground: 210 40% 98%;
+      --popover: 222.2 47.4% 11.2%;
+      --popover-foreground: 210 40% 98%;
+      --primary: 217.2 91.2% 59.8%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 186.6 100% 50%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 217.2 32.6% 17.5%;
+      --accent-foreground: 210 40% 98%;
+      --destructive: 0 62.8% 50.6%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 224.3 76.3% 48%;
+    }
   }
 
   * {
@@ -32,30 +57,48 @@
   }
 
   html {
-    background: linear-gradient(135deg, #0A0E27 0%, #151B35 100%);
     min-height: 100vh;
   }
 
+  /* Light mode background */
   body {
     @apply bg-background text-foreground antialiased;
-    background: linear-gradient(135deg, #0A0E27 0%, #151B35 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     min-height: 100vh;
+  }
+
+  /* Dark mode background */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: linear-gradient(135deg, #0A0E27 0%, #151B35 100%);
+    }
   }
 }
 
 @layer components {
-  /* Glassmorphism */
+  /* Glassmorphism - Light Mode */
   .glass {
-    @apply bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl;
+    @apply bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg;
   }
 
   .glass-hover {
-    @apply hover:bg-gray-900/60 hover:border-cyan-400/50 transition-all duration-300;
+    @apply hover:bg-white/90 hover:border-blue-300 transition-all duration-300;
   }
 
-  /* Premium Buttons */
+  /* Glassmorphism - Dark Mode */
+  @media (prefers-color-scheme: dark) {
+    .glass {
+      @apply bg-gray-900/40 border-gray-700/50;
+    }
+
+    .glass-hover {
+      @apply hover:bg-gray-900/60 hover:border-cyan-400/50;
+    }
+  }
+
+  /* Premium Buttons - Light Mode */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-glow hover:scale-105 active:scale-95 focus:ring-2 focus:ring-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+    @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95 focus:ring-2 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
   }
 
   .btn-secondary {
@@ -63,25 +106,135 @@
   }
 
   .btn-outline {
-    @apply px-6 py-3 border-2 border-cyan-400 text-cyan-400 rounded-xl bg-transparent transition-all duration-300 hover:bg-cyan-400/10 hover:shadow-glow-cyan;
+    @apply px-6 py-3 border-2 border-blue-500 text-blue-500 rounded-xl bg-transparent transition-all duration-300 hover:bg-blue-50;
   }
 
   .btn-ghost {
-    @apply px-6 py-3 text-gray-300 rounded-xl transition-all duration-300 hover:text-cyan-300 hover:bg-cyan-300/5;
+    @apply px-6 py-3 text-gray-600 rounded-xl transition-all duration-300 hover:text-blue-600 hover:bg-blue-50;
   }
 
   .btn-danger {
     @apply px-6 py-3 bg-gradient-to-r from-red-600 to-orange-500 text-white font-semibold rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 active:scale-95;
   }
 
-  /* Premium Cards */
-  .card-premium {
-    @apply p-6 bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-xl border border-blue-400/20 rounded-2xl shadow-xl hover:border-cyan-400/50 hover:shadow-glow transition-all duration-300;
+  /* Dark Mode Buttons */
+  @media (prefers-color-scheme: dark) {
+    .btn-primary {
+      @apply hover:shadow-glow focus:ring-cyan-300;
+    }
+
+    .btn-outline {
+      @apply border-cyan-400 text-cyan-400 hover:bg-cyan-400/10 hover:shadow-glow-cyan;
+    }
+
+    .btn-ghost {
+      @apply text-gray-300 hover:text-cyan-300 hover:bg-cyan-300/5;
+    }
   }
 
-  /* Premium Inputs */
+  /* Premium Cards */
+  .card-premium {
+    @apply p-6 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg hover:border-blue-300 hover:shadow-xl transition-all duration-300;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card-premium {
+      @apply bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-400/20 hover:border-cyan-400/50 hover:shadow-glow;
+    }
+  }
+
+  /* Premium Inputs - Light Mode */
   .input-premium {
-    @apply w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30 focus:bg-gray-900 transition-all duration-300 backdrop-blur-sm;
+    @apply w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300;
+  }
+
+  /* Premium Inputs - Dark Mode */
+  @media (prefers-color-scheme: dark) {
+    .input-premium {
+      @apply bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-cyan-400 focus:ring-cyan-400/30 focus:bg-gray-900 backdrop-blur-sm;
+    }
+  }
+
+  /* Status Badges - Light Mode */
+  .badge-pending {
+    @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+  }
+
+  .badge-assigned {
+    @apply bg-blue-100 text-blue-800 border border-blue-200;
+  }
+
+  .badge-completed {
+    @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
+  }
+
+  .badge-cancelled {
+    @apply bg-red-100 text-red-800 border border-red-200;
+  }
+
+  /* Status Badges - Dark Mode */
+  @media (prefers-color-scheme: dark) {
+    .badge-pending {
+      @apply bg-yellow-500/20 text-yellow-300 border-yellow-500/30;
+    }
+
+    .badge-assigned {
+      @apply bg-blue-500/20 text-blue-300 border-blue-500/30;
+    }
+
+    .badge-completed {
+      @apply bg-emerald-500/20 text-emerald-300 border-emerald-500/30;
+    }
+
+    .badge-cancelled {
+      @apply bg-red-500/20 text-red-300 border-red-500/30;
+    }
+  }
+
+  /* Text Colors - Adaptive */
+  .text-adaptive-primary {
+    @apply text-gray-900;
+  }
+
+  .text-adaptive-secondary {
+    @apply text-gray-600;
+  }
+
+  .text-adaptive-muted {
+    @apply text-gray-500;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .text-adaptive-primary {
+      @apply text-white;
+    }
+
+    .text-adaptive-secondary {
+      @apply text-gray-300;
+    }
+
+    .text-adaptive-muted {
+      @apply text-gray-400;
+    }
+  }
+
+  /* Background Adaptive */
+  .bg-adaptive-card {
+    @apply bg-white;
+  }
+
+  .bg-adaptive-secondary {
+    @apply bg-gray-100;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .bg-adaptive-card {
+      @apply bg-gray-900/50;
+    }
+
+    .bg-adaptive-secondary {
+      @apply bg-gray-800/50;
+    }
   }
 
   /* Animations */
