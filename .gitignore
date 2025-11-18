@@ -45,3 +45,4 @@ venv/
 # Build artifacts
 dist/
 build/
+*.tsbuildinfo
