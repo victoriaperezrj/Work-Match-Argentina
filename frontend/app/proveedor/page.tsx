@@ -52,77 +52,77 @@ export default function ProveedorDashboard() {
 
   return (
     <div className="min-h-screen">
-      {/* Premium Navigation */}
+      {/* Premium Navigation - Mobile Optimized */}
       <nav className="glass border-b border-gray-200 dark:border-gray-700/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-green-500 flex items-center justify-center shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-              </svg>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-green-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold text-adaptive-primary truncate">WorkMatch</h1>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400">Proveedor</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-adaptive-primary">WorkMatch</h1>
-              <p className="text-xs text-emerald-600 dark:text-emerald-400">Proveedor</p>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <RoleSwitcher />
+              <Link href="/proveedor/profile" className="btn-ghost text-xs sm:text-sm px-2 sm:px-4 py-2 hidden sm:block">
+                Mi Perfil
+              </Link>
+              <span className="text-sm text-adaptive-muted hidden lg:block truncate max-w-[150px]">
+                {user?.email || 'usuario@ejemplo.com'}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="btn-ghost text-xs sm:text-sm px-2 sm:px-4 py-2"
+              >
+                Salir
+              </button>
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <RoleSwitcher />
-            <Link href="/proveedor/profile" className="btn-ghost text-sm px-4 py-2 hidden sm:block">
-              Mi Perfil
-            </Link>
-            <span className="text-sm text-adaptive-muted hidden md:block">
-              {user?.email || 'usuario@ejemplo.com'}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="btn-ghost text-sm px-4 py-2"
-            >
-              Salir
-            </button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8 animate-slideUp">
-          <div>
-            <h2 className="text-3xl font-bold text-adaptive-primary mb-2">Trabajos Disponibles</h2>
-            <p className="text-adaptive-secondary">{pendingRequests.length} trabajos cerca de tu ubicación</p>
-          </div>
+        <div className="mb-6 sm:mb-8 animate-slideUp">
+          <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Trabajos Disponibles</h2>
+          <p className="text-sm sm:text-base text-adaptive-secondary">{pendingRequests.length} trabajos cerca de tu ubicación</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        {/* Stats - Mobile Grid */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className="glass p-6 text-center animate-slideUp"
+              className="glass p-3 sm:p-6 text-center animate-slideUp"
               style={{ animationDelay: `${0.1 + index * 0.05}s` }}
             >
-              <div className={`inline-flex w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} items-center justify-center mb-3 shadow-lg`}>
+              <div className={`inline-flex w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${stat.color} items-center justify-center mb-2 sm:mb-3 shadow-lg`}>
                 {index === 0 && (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect width="18" height="18" x="3" y="3" rx="2"/>
                     <path d="M3 9h18"/>
                     <path d="M9 21V9"/>
                   </svg>
                 )}
                 {index === 1 && (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 6 9 17l-5-5"/>
                   </svg>
                 )}
                 {index === 2 && (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
                     <circle cx="12" cy="10" r="3"/>
                   </svg>
                 )}
               </div>
-              <p className={`text-3xl font-bold ${stat.textColor} mb-1`}>{stat.value}</p>
-              <p className="text-sm text-adaptive-muted">{stat.label}</p>
+              <p className={`text-xl sm:text-3xl font-bold ${stat.textColor} mb-0.5 sm:mb-1`}>{stat.value}</p>
+              <p className="text-xs sm:text-sm text-adaptive-muted">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -166,30 +166,30 @@ export default function ProveedorDashboard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
-                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
-                    <p className="text-adaptive-muted text-xs mb-1">Ubicación</p>
-                    <p className="font-medium text-adaptive-secondary">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-sm mb-4 sm:mb-6">
+                  <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                    <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Ubicación</p>
+                    <p className="font-medium text-adaptive-secondary text-xs sm:text-sm truncate">
                       {getLocationDisplayName(request.location_id)}
                     </p>
                   </div>
                   {request.price_quoted && (
-                    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
-                      <p className="text-adaptive-muted text-xs mb-1">Precio Estimado</p>
-                      <p className="font-medium text-emerald-600 dark:text-emerald-400">
-                        ${request.price_quoted.toLocaleString('es-AR')} ARS
+                    <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                      <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Precio</p>
+                      <p className="font-medium text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+                        ${request.price_quoted.toLocaleString('es-AR')}
                       </p>
                     </div>
                   )}
-                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
-                    <p className="text-adaptive-muted text-xs mb-1">Publicado</p>
-                    <p className="font-medium text-adaptive-secondary">
+                  <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                    <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Publicado</p>
+                    <p className="font-medium text-adaptive-secondary text-xs sm:text-sm">
                       {new Date(request.created_at).toLocaleDateString('es-AR')}
                     </p>
                   </div>
-                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50">
-                    <p className="text-adaptive-muted text-xs mb-1">Distancia</p>
-                    <p className="font-medium text-blue-600 dark:text-cyan-400">{(Math.random() * 10 + 1).toFixed(1)} km</p>
+                  <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                    <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Distancia</p>
+                    <p className="font-medium text-blue-600 dark:text-cyan-400 text-xs sm:text-sm">{(Math.random() * 10 + 1).toFixed(1)} km</p>
                   </div>
                 </div>
 

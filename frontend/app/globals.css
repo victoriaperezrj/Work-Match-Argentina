@@ -455,3 +455,215 @@ button, a, input, select, textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==================== */
+/* MOBILE-FIRST STYLES */
+/* ==================== */
+
+/* Ensure minimum tap target size (44x44px per Apple/Google guidelines) */
+.btn-primary,
+.btn-secondary,
+.btn-outline,
+.btn-ghost,
+.btn-danger,
+.card-interactive {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile-optimized buttons */
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline,
+  .btn-ghost,
+  .btn-danger {
+    @apply px-4 py-3 text-sm;
+    min-height: 48px;
+  }
+
+  /* Full-width buttons on mobile */
+  .btn-mobile-full {
+    @apply w-full;
+  }
+}
+
+/* Mobile navigation fixes */
+@media (max-width: 640px) {
+  nav .glass {
+    @apply rounded-none;
+  }
+}
+
+/* Mobile-optimized cards */
+@media (max-width: 640px) {
+  .glass {
+    @apply rounded-xl p-4;
+  }
+
+  .card-interactive {
+    @apply p-4;
+  }
+
+  .card-premium {
+    @apply p-4;
+  }
+}
+
+/* Mobile typography */
+@media (max-width: 640px) {
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Touch-friendly scrolling */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile grid adjustments */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    @apply grid-cols-1;
+  }
+}
+
+@media (max-width: 768px) {
+  .md\:grid-cols-3 {
+    @apply grid-cols-1;
+  }
+
+  .md\:grid-cols-4 {
+    @apply grid-cols-2;
+  }
+}
+
+/* ========================= */
+/* IMPROVED DARK MODE COLORS */
+/* ========================= */
+
+/* Better contrast text colors for dark mode */
+@media (prefers-color-scheme: dark) {
+  .text-adaptive-primary {
+    @apply text-gray-50;
+  }
+
+  .text-adaptive-secondary {
+    @apply text-gray-200;
+  }
+
+  .text-adaptive-muted {
+    @apply text-gray-400;
+  }
+
+  /* Improved badge contrast */
+  .badge-pending {
+    @apply bg-amber-500/25 text-amber-200 border-amber-400/40;
+  }
+
+  .badge-assigned {
+    @apply bg-sky-500/25 text-sky-200 border-sky-400/40;
+  }
+
+  .badge-completed {
+    @apply bg-emerald-500/25 text-emerald-200 border-emerald-400/40;
+  }
+
+  .badge-cancelled {
+    @apply bg-rose-500/25 text-rose-200 border-rose-400/40;
+  }
+
+  /* Better input contrast */
+  .input-premium {
+    @apply bg-gray-800/80 border-gray-600 text-gray-100 placeholder-gray-400;
+  }
+
+  .input-premium:focus {
+    @apply border-cyan-400 ring-cyan-400/40;
+  }
+
+  /* Improved glassmorphism for dark */
+  .glass {
+    @apply bg-gray-800/70 border-gray-600/50;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 60px rgba(6, 182, 212, 0.08);
+  }
+
+  /* Better stat card backgrounds */
+  .bg-gray-50 {
+    @apply bg-gray-800/60;
+  }
+
+  /* Link colors */
+  a {
+    @apply text-cyan-400;
+  }
+
+  a:hover {
+    @apply text-cyan-300;
+  }
+}
+
+/* Ensure readable text on gradients */
+.bg-gradient-to-r,
+.bg-gradient-to-br {
+  color: white;
+}
+
+/* Accessibility: Focus visible states */
+*:focus-visible {
+  @apply outline-none ring-2 ring-cyan-500 ring-offset-2 ring-offset-transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  *:focus-visible {
+    @apply ring-cyan-400 ring-offset-gray-900;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass {
+    @apply border-2;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    @apply border-2 border-white;
+  }
+
+  .text-adaptive-muted {
+    @apply text-gray-600;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .text-adaptive-muted {
+      @apply text-gray-300;
+    }
+  }
+}
+
