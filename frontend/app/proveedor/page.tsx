@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
@@ -10,6 +11,7 @@ export default function ProveedorDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
+  const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
 
   const handleLogout = () => {
     logout();
@@ -20,7 +22,7 @@ export default function ProveedorDashboard() {
   const pendingRequests = requests.filter(r => r.status === 'Pendiente');
 
   // Get jobs accepted by this provider
-  const acceptedJobs = requests.filter(r => r.provider_id === user?.id);
+  const acceptedJobs = requests.filter(r => r.provider_id === user?.id || (user?.id === 'mock-user-1' && r.provider_id === 'provider-1'));
 
   const handleAcceptRequest = (requestId: string) => {
     updateRequest(requestId, {
@@ -28,6 +30,17 @@ export default function ProveedorDashboard() {
       provider_id: user?.id || 'mock-provider',
     });
   };
+
+  const handleCompleteJob = (requestId: string) => {
+    updateRequest(requestId, {
+      status: 'Completado',
+    });
+  };
+
+  const tabs = [
+    { id: 'available', label: 'Disponibles', count: pendingRequests.length },
+    { id: 'myJobs', label: 'Mis Trabajos', count: acceptedJobs.length },
+  ];
 
   const stats = [
     {
@@ -89,8 +102,8 @@ export default function ProveedorDashboard() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8 animate-slideUp">
-          <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Trabajos Disponibles</h2>
-          <p className="text-sm sm:text-base text-adaptive-secondary">{pendingRequests.length} trabajos cerca de tu ubicación</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Panel de Proveedor</h2>
+          <p className="text-sm sm:text-base text-adaptive-secondary">Gestiona tus trabajos y encuentra nuevas oportunidades</p>
         </div>
 
         {/* Stats - Mobile Grid */}
@@ -127,7 +140,27 @@ export default function ProveedorDashboard() {
           ))}
         </div>
 
-        {pendingRequests.length === 0 ? (
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.15s' }}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium whitespace-nowrap transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-lg'
+                  : 'glass text-adaptive-secondary hover:text-emerald-600 dark:hover:text-emerald-300'
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
+        {/* Available Jobs Tab */}
+        {activeTab === 'available' && (
+          <>
+            {pendingRequests.length === 0 ? (
           <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
@@ -205,6 +238,105 @@ export default function ProveedorDashboard() {
               </div>
             ))}
           </div>
+        )}
+          </>
+        )}
+
+        {/* My Jobs Tab */}
+        {activeTab === 'myJobs' && (
+          <>
+            {acceptedJobs.length === 0 ? (
+              <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
+                <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <path d="M8 12h8"/>
+                  </svg>
+                </div>
+                <p className="text-adaptive-secondary mb-6">
+                  Aún no has aceptado ningún trabajo
+                </p>
+                <button
+                  onClick={() => setActiveTab('available')}
+                  className="btn-secondary inline-flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.3-4.3"/>
+                  </svg>
+                  Ver trabajos disponibles
+                </button>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {acceptedJobs.map((job, index) => (
+                  <div
+                    key={job.id}
+                    className="glass glass-hover p-6 animate-slideUp"
+                    style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-semibold text-adaptive-primary">{job.service_type}</h3>
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            job.status === 'Asignado' ? 'badge-assigned' : 'badge-completed'
+                          }`}>
+                            {job.status}
+                          </span>
+                        </div>
+                        <p className="text-adaptive-secondary">{job.description}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-sm mb-4 sm:mb-6">
+                      <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                        <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Ubicación</p>
+                        <p className="font-medium text-adaptive-secondary text-xs sm:text-sm truncate">
+                          {getLocationDisplayName(job.location_id)}
+                        </p>
+                      </div>
+                      {job.price_quoted && (
+                        <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                          <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Precio</p>
+                          <p className="font-medium text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+                            ${job.price_quoted.toLocaleString('es-AR')}
+                          </p>
+                        </div>
+                      )}
+                      <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
+                        <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Aceptado</p>
+                        <p className="font-medium text-adaptive-secondary text-xs sm:text-sm">
+                          {new Date(job.updated_at).toLocaleDateString('es-AR')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {job.status === 'Asignado' && (
+                      <button
+                        onClick={() => handleCompleteJob(job.id)}
+                        className="btn-primary w-full flex items-center justify-center gap-2"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                        Marcar como Completado
+                      </button>
+                    )}
+
+                    {job.status === 'Completado' && (
+                      <div className="flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                        Trabajo Completado
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
