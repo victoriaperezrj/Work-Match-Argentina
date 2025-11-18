@@ -1,57 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAuthStore } from '@/lib/stores';
-import { getCurrentUser, onAuthStateChange } from '@/lib/supabase/auth';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { setUser, setLoading, isAuthenticated, user } = useAuthStore();
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Initial auth check
-    const initAuth = async () => {
-      setLoading(true);
+    // Wait for client-side hydration
+    setIsHydrated(true);
+  }, []);
 
-      try {
-        const user = await getCurrentUser();
-        if (user) {
-          setUser(user);
-        }
-      } catch (error) {
-        console.error('Auth init error:', error);
-      } finally {
-        setLoading(false);
-        setIsInitialized(true);
-      }
-    };
-
-    initAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange((user) => {
-      setUser(user);
-
-      // Redirect on sign out
-      if (!user && pathname?.startsWith('/demandante') || pathname?.startsWith('/proveedor')) {
-        router.push('/login');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [setUser, setLoading, router, pathname]);
-
-  // Show loading state during initial auth check
-  if (!isInitialized) {
+  // Show loading state during hydration
+  if (!isHydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -60,7 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>
           </div>
-          <p className="text-adaptive-muted">Cargando...</p>
+          <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
         </div>
       </div>
     );
