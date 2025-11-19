@@ -238,6 +238,17 @@ export default function DemandanteDashboard() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <RoleSwitcher />
+              <button
+                onClick={() => setShortcutsOpen(true)}
+                className="p-2 rounded-lg text-adaptive-muted hover:text-adaptive-primary hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors hidden sm:flex items-center gap-1"
+                title="Atajos de teclado (?)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <path d="M12 17h.01"/>
+                </svg>
+              </button>
               <span className="text-sm text-adaptive-muted hidden md:block truncate max-w-[150px]">
                 {user?.email || 'usuario@ejemplo.com'}
               </span>
