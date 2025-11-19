@@ -27,6 +27,7 @@ export default function NewRequestPage() {
   const [description, setDescription] = useState('');
   const [serviceType, setServiceType] = useState(SERVICE_TYPES[0]);
   const [locationId, setLocationId] = useState('');
+  const [budget, setBudget] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -53,7 +54,7 @@ export default function NewRequestPage() {
         service_type: serviceType,
         location_id: locationId,
         status: 'Pendiente' as const,
-        price_quoted: null,
+        price_quoted: budget ? parseInt(budget) : null,
         provider_id: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -167,6 +168,26 @@ export default function NewRequestPage() {
               </select>
               <p className="text-xs text-adaptive-muted mt-2">
                 Provincia de San Luis • Pronto más provincias disponibles
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-adaptive-secondary mb-2">
+                Presupuesto Estimado (opcional)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-adaptive-muted">$</span>
+                <input
+                  type="number"
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="input-premium pl-8 text-sm sm:text-base"
+                  placeholder="ej: 5000"
+                  min="0"
+                />
+              </div>
+              <p className="text-xs text-adaptive-muted mt-2">
+                Define un presupuesto para que los proveedores sepan tu expectativa
               </p>
             </div>
 
