@@ -8,6 +8,8 @@ import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
+import { RequestDetailsModal } from '@/components/request-details-modal';
+import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function ProveedorDashboard() {
   const router = useRouter();
@@ -20,6 +22,8 @@ export default function ProveedorDashboard() {
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -88,6 +92,22 @@ export default function ProveedorDashboard() {
     }
     setCompleteDialogOpen(false);
     setSelectedJobId(null);
+  };
+
+  const handleViewDetails = (request: ServiceRequest) => {
+    setSelectedRequest(request);
+    setDetailsModalOpen(true);
+  };
+
+  const handleModalAction = () => {
+    if (selectedRequest) {
+      if (selectedRequest.status === 'Pendiente') {
+        handleAcceptClick(selectedRequest.id);
+      } else if (selectedRequest.status === 'Asignado') {
+        handleCompleteClick(selectedRequest.id);
+      }
+      setDetailsModalOpen(false);
+    }
   };
 
   const tabs = [
@@ -323,8 +343,9 @@ export default function ProveedorDashboard() {
             {filteredPendingRequests.map((request, index) => (
               <div
                 key={request.id}
-                className="glass glass-hover p-6 animate-slideUp"
+                className="glass glass-hover p-6 animate-slideUp cursor-pointer"
                 style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+                onClick={() => handleViewDetails(request)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
@@ -366,7 +387,10 @@ export default function ProveedorDashboard() {
                 </div>
 
                 <button
-                  onClick={() => handleAcceptClick(request.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAcceptClick(request.id);
+                  }}
                   className="btn-secondary w-full flex items-center justify-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -437,8 +461,9 @@ export default function ProveedorDashboard() {
                 {filteredAcceptedJobs.map((job, index) => (
                   <div
                     key={job.id}
-                    className="glass glass-hover p-6 animate-slideUp"
+                    className="glass glass-hover p-6 animate-slideUp cursor-pointer"
                     style={{ animationDelay: `${0.2 + index * 0.05}s` }}
+                    onClick={() => handleViewDetails(job)}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
@@ -479,7 +504,10 @@ export default function ProveedorDashboard() {
 
                     {job.status === 'Asignado' && (
                       <button
-                        onClick={() => handleCompleteClick(job.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCompleteClick(job.id);
+                        }}
                         className="btn-primary w-full flex items-center justify-center gap-2"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -527,6 +555,27 @@ export default function ProveedorDashboard() {
         variant="success"
         onConfirm={handleConfirmComplete}
         onCancel={() => setCompleteDialogOpen(false)}
+      />
+
+      {/* Request Details Modal */}
+      <RequestDetailsModal
+        isOpen={detailsModalOpen}
+        request={selectedRequest}
+        onClose={() => setDetailsModalOpen(false)}
+        onAction={
+          selectedRequest?.status === 'Pendiente' || selectedRequest?.status === 'Asignado'
+            ? handleModalAction
+            : undefined
+        }
+        actionLabel={
+          selectedRequest?.status === 'Pendiente'
+            ? 'Aceptar Trabajo'
+            : selectedRequest?.status === 'Asignado'
+            ? 'Marcar como Completado'
+            : undefined
+        }
+        actionVariant={selectedRequest?.status === 'Pendiente' ? 'secondary' : 'primary'}
+        userType="proveedor"
       />
     </div>
   );

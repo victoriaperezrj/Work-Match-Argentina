@@ -8,6 +8,8 @@ import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
+import { RequestDetailsModal } from '@/components/request-details-modal';
+import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function DemandanteDashboard() {
   const router = useRouter();
@@ -19,6 +21,8 @@ export default function DemandanteDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [requestToCancel, setRequestToCancel] = useState<string | null>(null);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   const handleCancelClick = (requestId: string) => {
     setRequestToCancel(requestId);
@@ -34,6 +38,18 @@ export default function DemandanteDashboard() {
     }
     setCancelDialogOpen(false);
     setRequestToCancel(null);
+  };
+
+  const handleViewDetails = (request: ServiceRequest) => {
+    setSelectedRequest(request);
+    setDetailsModalOpen(true);
+  };
+
+  const handleModalAction = () => {
+    if (selectedRequest && selectedRequest.status === 'Pendiente') {
+      handleCancelClick(selectedRequest.id);
+      setDetailsModalOpen(false);
+    }
   };
 
   const handleLogout = () => {
@@ -332,8 +348,9 @@ export default function DemandanteDashboard() {
             {filteredRequests.map((request, index) => (
               <div
                 key={request.id}
-                className="glass glass-hover p-6 animate-slideUp"
+                className="glass glass-hover p-6 animate-slideUp cursor-pointer"
                 style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+                onClick={() => handleViewDetails(request)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -377,7 +394,10 @@ export default function DemandanteDashboard() {
                 {/* Cancel button for pending requests */}
                 {request.status === 'Pendiente' && (
                   <button
-                    onClick={() => handleCancelClick(request.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCancelClick(request.id);
+                    }}
                     className="btn-danger text-sm flex items-center gap-2"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -422,6 +442,17 @@ export default function DemandanteDashboard() {
         variant="danger"
         onConfirm={handleConfirmCancel}
         onCancel={() => setCancelDialogOpen(false)}
+      />
+
+      {/* Request Details Modal */}
+      <RequestDetailsModal
+        isOpen={detailsModalOpen}
+        request={selectedRequest}
+        onClose={() => setDetailsModalOpen(false)}
+        onAction={selectedRequest?.status === 'Pendiente' ? handleModalAction : undefined}
+        actionLabel={selectedRequest?.status === 'Pendiente' ? 'Cancelar Solicitud' : undefined}
+        actionVariant="danger"
+        userType="demandante"
       />
     </div>
   );
