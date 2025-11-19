@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ToastContainer } from '@/components/toast'
+import { NetworkStatus } from '@/components/network-status'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -84,6 +85,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={inter.className}>
+        <NetworkStatus />
         {children}
         <ToastContainer />
       </body>
