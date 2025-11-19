@@ -11,6 +11,7 @@ import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
 import { DashboardSkeleton } from '@/components/skeleton';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import { formatRelativeTime } from '@/lib/utils/time';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function DemandanteDashboard() {
@@ -432,9 +433,9 @@ export default function DemandanteDashboard() {
                     </div>
                   )}
                   <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
-                    <p className="text-adaptive-muted text-xs mb-1">Fecha</p>
+                    <p className="text-adaptive-muted text-xs mb-1">Creado</p>
                     <p className="font-medium text-adaptive-secondary">
-                      {new Date(request.created_at).toLocaleDateString('es-AR')}
+                      {formatRelativeTime(request.created_at)}
                     </p>
                   </div>
                   {request.provider_id && (

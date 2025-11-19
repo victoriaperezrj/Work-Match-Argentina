@@ -11,6 +11,7 @@ import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
 import { DashboardSkeleton } from '@/components/skeleton';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
+import { formatRelativeTime } from '@/lib/utils/time';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function ProveedorDashboard() {
@@ -411,7 +412,7 @@ export default function ProveedorDashboard() {
                   <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
                     <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Publicado</p>
                     <p className="font-medium text-adaptive-secondary text-xs sm:text-sm">
-                      {new Date(request.created_at).toLocaleDateString('es-AR')}
+                      {formatRelativeTime(request.created_at)}
                     </p>
                   </div>
                   <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
@@ -531,7 +532,7 @@ export default function ProveedorDashboard() {
                       <div className="p-2.5 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-800/60">
                         <p className="text-adaptive-muted text-xs mb-0.5 sm:mb-1">Aceptado</p>
                         <p className="font-medium text-adaptive-secondary text-xs sm:text-sm">
-                          {new Date(job.updated_at).toLocaleDateString('es-AR')}
+                          {formatRelativeTime(job.updated_at)}
                         </p>
                       </div>
                     </div>
