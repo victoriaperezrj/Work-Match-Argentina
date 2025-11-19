@@ -29,6 +29,31 @@ export default function DemandanteDashboard() {
     ? requests.filter(r => r.demandante_id === user.id || r.demandante_id.startsWith('mock'))
     : requests;
 
+  // Calculate total spent on completed requests
+  const completedRequests = myRequests.filter(r => r.status === 'Completado');
+  const totalSpent = completedRequests.reduce((sum, req) => sum + (req.price_quoted || 0), 0);
+
+  const stats = [
+    {
+      label: 'Total',
+      value: myRequests.length,
+      color: 'from-blue-600 to-cyan-500',
+      textColor: 'text-blue-600 dark:text-cyan-400',
+    },
+    {
+      label: 'En Progreso',
+      value: myRequests.filter(r => r.status === 'Asignado').length,
+      color: 'from-emerald-600 to-green-500',
+      textColor: 'text-emerald-600 dark:text-emerald-400',
+    },
+    {
+      label: 'Invertido',
+      value: `$${totalSpent.toLocaleString('es-AR')}`,
+      color: 'from-purple-600 to-pink-500',
+      textColor: 'text-purple-600 dark:text-purple-400',
+    },
+  ];
+
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       Pendiente: 'badge-pending',
@@ -110,6 +135,47 @@ export default function DemandanteDashboard() {
             </svg>
             Nueva Solicitud
           </Link>
+        </div>
+
+        {/* Stats - Mobile Grid */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
+          {stats.map((stat, index) => (
+            <div
+              key={stat.label}
+              className="glass p-3 sm:p-6 text-center animate-slideUp"
+              style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+            >
+              <div className={`inline-flex w-8 h-8 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br ${stat.color} items-center justify-center mb-2 sm:mb-3 shadow-lg`}>
+                {index === 0 && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="18" x="3" y="3" rx="2"/>
+                    <path d="M3 9h18"/>
+                    <path d="M9 21V9"/>
+                  </svg>
+                )}
+                {index === 1 && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v4"/>
+                    <path d="m16.24 7.76-2.12 2.12"/>
+                    <path d="M18 12h4"/>
+                    <path d="m16.24 16.24-2.12-2.12"/>
+                    <path d="M12 18v4"/>
+                    <path d="m7.76 16.24 2.12-2.12"/>
+                    <path d="M2 12h4"/>
+                    <path d="m7.76 7.76 2.12 2.12"/>
+                  </svg>
+                )}
+                {index === 2 && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" x2="12" y1="2" y2="22"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                )}
+              </div>
+              <p className={`text-xl sm:text-3xl font-bold ${stat.textColor} mb-0.5 sm:mb-1`}>{stat.value}</p>
+              <p className="text-xs sm:text-sm text-adaptive-muted">{stat.label}</p>
+            </div>
+          ))}
         </div>
 
         {/* Tabs - Scrollable on mobile */}
