@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
 import { DashboardSkeleton } from '@/components/skeleton';
+import { ShortcutsModal } from '@/components/shortcuts-modal';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 import { formatRelativeTime } from '@/lib/utils/time';
 import { ServiceRequest } from '@/lib/stores/requests-store';
@@ -22,18 +23,29 @@ export default function ProveedorDashboard() {
   const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-high' | 'price-low'>('newest');
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Handle hydration
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Shortcuts definitions for the help modal
+  const shortcutsList = [
+    { key: '/', description: 'Buscar' },
+    { key: '1', description: 'Trabajos disponibles' },
+    { key: '2', description: 'Mis trabajos' },
+    { key: '?', description: 'Mostrar atajos' },
+    { key: 'Esc', description: 'Cerrar modal' },
+  ];
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -51,6 +63,11 @@ export default function ProveedorDashboard() {
       key: '2',
       action: () => setActiveTab('myJobs'),
       description: 'My jobs',
+    },
+    {
+      key: '?',
+      action: () => setShortcutsOpen(true),
+      description: 'Show shortcuts',
     },
   ]);
 
@@ -72,10 +89,30 @@ export default function ProveedorDashboard() {
     return matchesDescription || matchesServiceType || matchesLocation;
   };
 
+  // Sorting helper
+  const sortRequests = (items: typeof requests) => {
+    return [...items].sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'price-high':
+          return (b.price_quoted || 0) - (a.price_quoted || 0);
+        case 'price-low':
+          return (a.price_quoted || 0) - (b.price_quoted || 0);
+        default:
+          return 0;
+      }
+    });
+  };
+
   // Filter by service type and search
-  const filteredPendingRequests = pendingRequests
-    .filter(r => serviceFilter === 'all' || r.service_type === serviceFilter)
-    .filter(matchesSearch);
+  const filteredPendingRequests = sortRequests(
+    pendingRequests
+      .filter(r => serviceFilter === 'all' || r.service_type === serviceFilter)
+      .filter(matchesSearch)
+  );
 
   // Get unique service types from pending requests
   const availableServiceTypes = Array.from(new Set(pendingRequests.map(r => r.service_type))).sort();
@@ -84,7 +121,7 @@ export default function ProveedorDashboard() {
   const acceptedJobs = requests.filter(r => r.provider_id === user?.id || (user?.id === 'mock-user-1' && r.provider_id === 'provider-1'));
 
   // Filter accepted jobs by search
-  const filteredAcceptedJobs = acceptedJobs.filter(matchesSearch);
+  const filteredAcceptedJobs = sortRequests(acceptedJobs.filter(matchesSearch));
 
   // Calculate total earnings from completed jobs
   const completedJobs = acceptedJobs.filter(r => r.status === 'Completado');
@@ -282,21 +319,38 @@ export default function ProveedorDashboard() {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.2s' }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium whitespace-nowrap transition-all duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-lg'
-                  : 'glass text-adaptive-secondary hover:text-emerald-600 dark:hover:text-emerald-300'
-              }`}
+        {/* Tabs and Sort */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.2s' }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium whitespace-nowrap transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-emerald-600 to-green-500 text-white shadow-lg'
+                    : 'glass text-adaptive-secondary hover:text-emerald-600 dark:hover:text-emerald-300'
+                }`}
             >
               {tab.label} ({tab.count})
             </button>
           ))}
+          </div>
+
+          {/* Sort Selector */}
+          <div className="flex items-center gap-2 animate-slideUp" style={{ animationDelay: '0.25s' }}>
+            <label className="text-xs sm:text-sm text-adaptive-muted whitespace-nowrap">Ordenar:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/50 text-adaptive-primary focus:border-emerald-400 dark:focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 dark:focus:ring-emerald-400/20 outline-none transition-all"
+            >
+              <option value="newest">Más recientes</option>
+              <option value="oldest">Más antiguos</option>
+              <option value="price-high">Mayor precio</option>
+              <option value="price-low">Menor precio</option>
+            </select>
+          </div>
         </div>
 
         {/* Available Jobs Tab */}
@@ -611,6 +665,13 @@ export default function ProveedorDashboard() {
         }
         actionVariant={selectedRequest?.status === 'Pendiente' ? 'secondary' : 'primary'}
         userType="proveedor"
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <ShortcutsModal
+        isOpen={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+        shortcuts={shortcutsList}
       />
     </div>
   );

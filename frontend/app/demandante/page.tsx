@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
 import { DashboardSkeleton } from '@/components/skeleton';
+import { ShortcutsModal } from '@/components/shortcuts-modal';
 import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 import { formatRelativeTime } from '@/lib/utils/time';
 import { ServiceRequest } from '@/lib/stores/requests-store';
@@ -27,12 +28,26 @@ export default function DemandanteDashboard() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Handle hydration
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Shortcuts definitions for the help modal
+  const shortcutsList = [
+    { key: '/', description: 'Buscar' },
+    { key: 'n', description: 'Nueva solicitud' },
+    { key: '1', description: 'Ver todas' },
+    { key: '2', description: 'Pendientes' },
+    { key: '3', description: 'Asignadas' },
+    { key: '4', description: 'Completadas' },
+    { key: '5', description: 'Canceladas' },
+    { key: '?', description: 'Mostrar atajos' },
+    { key: 'Esc', description: 'Cerrar modal' },
+  ];
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -70,6 +85,11 @@ export default function DemandanteDashboard() {
       key: '5',
       action: () => setActiveTab('cancelled'),
       description: 'Cancelled requests',
+    },
+    {
+      key: '?',
+      action: () => setShortcutsOpen(true),
+      description: 'Show shortcuts',
     },
   ]);
 
@@ -508,6 +528,13 @@ export default function DemandanteDashboard() {
         actionLabel={selectedRequest?.status === 'Pendiente' ? 'Cancelar Solicitud' : undefined}
         actionVariant="danger"
         userType="demandante"
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <ShortcutsModal
+        isOpen={shortcutsOpen}
+        onClose={() => setShortcutsOpen(false)}
+        shortcuts={shortcutsList}
       />
     </div>
   );
