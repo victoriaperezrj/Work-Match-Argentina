@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  // Light theme colors
   static const Color primary = Color(0xFF3B82F6);
   static const Color secondary = Color(0xFF10B981);
   static const Color danger = Color(0xFFEF4444);
@@ -10,6 +11,108 @@ class AppColors {
   static const Color surface = Colors.white;
   static const Color textPrimary = Color(0xFF1F2937);
   static const Color textSecondary = Color(0xFF6B7280);
+
+  // Dark theme colors
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkCard = Color(0xFF2C2C2C);
+  static const Color darkTextPrimary = Color(0xFFE1E1E1);
+  static const Color darkTextSecondary = Color(0xFF9E9E9E);
+}
+
+/// App Theme Data
+class AppThemes {
+  static ThemeData get lightTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        primaryColor: AppColors.primary,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          secondary: AppColors.secondary,
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: AppColors.background,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: AppColors.textPrimary),
+          titleTextStyle: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          color: AppColors.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+            borderSide: BorderSide(color: Colors.grey[300]!),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+          ),
+        ),
+      );
+
+  static ThemeData get darkTheme => ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        primaryColor: AppColors.primary,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          secondary: AppColors.secondary,
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: AppColors.darkBackground,
+        appBarTheme: AppBarTheme(
+          backgroundColor: AppColors.darkSurface,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
+          titleTextStyle: const TextStyle(
+            color: AppColors.darkTextPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          color: AppColors.darkCard,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColors.darkSurface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        dialogTheme: const DialogTheme(
+          backgroundColor: AppColors.darkSurface,
+        ),
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: AppColors.darkCard,
+        ),
+      );
 }
 
 class AppConstants {
