@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
 import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 export default function DemandanteDashboard() {
   const router = useRouter();
@@ -13,11 +14,22 @@ export default function DemandanteDashboard() {
   const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-high' | 'price-low'>('newest');
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [requestToCancel, setRequestToCancel] = useState<string | null>(null);
 
-  const handleCancelRequest = (requestId: string) => {
-    updateRequest(requestId, {
-      status: 'Cancelado',
-    });
+  const handleCancelClick = (requestId: string) => {
+    setRequestToCancel(requestId);
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (requestToCancel) {
+      updateRequest(requestToCancel, {
+        status: 'Cancelado',
+      });
+    }
+    setCancelDialogOpen(false);
+    setRequestToCancel(null);
   };
 
   const handleLogout = () => {
@@ -297,7 +309,7 @@ export default function DemandanteDashboard() {
                 {/* Cancel button for pending requests */}
                 {request.status === 'Pendiente' && (
                   <button
-                    onClick={() => handleCancelRequest(request.id)}
+                    onClick={() => handleCancelClick(request.id)}
                     className="btn-danger text-sm flex items-center gap-2"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -331,6 +343,18 @@ export default function DemandanteDashboard() {
           </div>
         )}
       </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={cancelDialogOpen}
+        title="Cancelar Solicitud"
+        message="¿Estás seguro que deseas cancelar esta solicitud? Esta acción no se puede deshacer."
+        confirmText="Sí, cancelar"
+        cancelText="No, mantener"
+        variant="danger"
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancelDialogOpen(false)}
+      />
     </div>
   );
 }
