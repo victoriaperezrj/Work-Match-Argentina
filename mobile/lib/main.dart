@@ -11,6 +11,7 @@ import 'screens/demandante/demandante_dashboard.dart';
 import 'screens/demandante/new_request_screen.dart';
 import 'screens/proveedor/proveedor_dashboard.dart';
 import 'screens/proveedor/profile_setup_screen.dart';
+import 'screens/proveedor/job_history_screen.dart';
 import 'utils/constants.dart';
 import 'utils/mock_data.dart';
 
@@ -89,6 +90,7 @@ class MyApp extends StatelessWidget {
           // Proveedor routes
           '/proveedor': (context) => const ProveedorDashboard(),
           '/proveedor/profile': (context) => const ProfileSetupScreen(),
+          '/proveedor/history': (context) => const JobHistoryScreen(),
         },
       ),
     );
