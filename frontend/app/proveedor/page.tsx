@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
 import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 
 export default function ProveedorDashboard() {
   const router = useRouter();
@@ -14,6 +15,9 @@ export default function ProveedorDashboard() {
   const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -51,17 +55,35 @@ export default function ProveedorDashboard() {
   const completedJobs = acceptedJobs.filter(r => r.status === 'Completado');
   const totalEarnings = completedJobs.reduce((sum, job) => sum + (job.price_quoted || 0), 0);
 
-  const handleAcceptRequest = (requestId: string) => {
-    updateRequest(requestId, {
-      status: 'Asignado',
-      provider_id: user?.id || 'mock-provider',
-    });
+  const handleAcceptClick = (requestId: string) => {
+    setSelectedJobId(requestId);
+    setAcceptDialogOpen(true);
   };
 
-  const handleCompleteJob = (requestId: string) => {
-    updateRequest(requestId, {
-      status: 'Completado',
-    });
+  const handleConfirmAccept = () => {
+    if (selectedJobId) {
+      updateRequest(selectedJobId, {
+        status: 'Asignado',
+        provider_id: user?.id || 'mock-provider',
+      });
+    }
+    setAcceptDialogOpen(false);
+    setSelectedJobId(null);
+  };
+
+  const handleCompleteClick = (requestId: string) => {
+    setSelectedJobId(requestId);
+    setCompleteDialogOpen(true);
+  };
+
+  const handleConfirmComplete = () => {
+    if (selectedJobId) {
+      updateRequest(selectedJobId, {
+        status: 'Completado',
+      });
+    }
+    setCompleteDialogOpen(false);
+    setSelectedJobId(null);
   };
 
   const tabs = [
@@ -260,16 +282,37 @@ export default function ProveedorDashboard() {
                 <path d="m21 21-4.3-4.3"/>
               </svg>
             </div>
-            <p className="text-adaptive-secondary mb-6">
-              No hay trabajos pendientes que coincidan con tu perfil
-            </p>
-            <Link href="/proveedor/profile" className="btn-secondary inline-flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-              Configurar mi perfil
-            </Link>
+            {searchQuery ? (
+              <>
+                <p className="text-adaptive-secondary mb-2">No se encontraron trabajos para "{searchQuery}"</p>
+                <p className="text-sm text-adaptive-muted mb-6">Intenta con otros términos de búsqueda</p>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="btn-ghost inline-flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18"/>
+                    <path d="m6 6 12 12"/>
+                  </svg>
+                  Limpiar búsqueda
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-adaptive-secondary mb-6">
+                  {serviceFilter !== 'all'
+                    ? `No hay trabajos de ${serviceFilter} disponibles`
+                    : 'No hay trabajos pendientes que coincidan con tu perfil'}
+                </p>
+                <Link href="/proveedor/profile" className="btn-secondary inline-flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  Configurar mi perfil
+                </Link>
+              </>
+            )}
           </div>
         ) : (
           <div className="grid gap-4">
@@ -319,7 +362,7 @@ export default function ProveedorDashboard() {
                 </div>
 
                 <button
-                  onClick={() => handleAcceptRequest(request.id)}
+                  onClick={() => handleAcceptClick(request.id)}
                   className="btn-secondary w-full flex items-center justify-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -340,24 +383,50 @@ export default function ProveedorDashboard() {
             {filteredAcceptedJobs.length === 0 ? (
               <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
                 <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
-                    <rect width="18" height="18" x="3" y="3" rx="2"/>
-                    <path d="M8 12h8"/>
-                  </svg>
+                  {searchQuery ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="m21 21-4.3-4.3"/>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
+                      <rect width="18" height="18" x="3" y="3" rx="2"/>
+                      <path d="M8 12h8"/>
+                    </svg>
+                  )}
                 </div>
-                <p className="text-adaptive-secondary mb-6">
-                  Aún no has aceptado ningún trabajo
-                </p>
-                <button
-                  onClick={() => setActiveTab('available')}
-                  className="btn-secondary inline-flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="m21 21-4.3-4.3"/>
-                  </svg>
-                  Ver trabajos disponibles
-                </button>
+                {searchQuery ? (
+                  <>
+                    <p className="text-adaptive-secondary mb-2">No se encontraron trabajos para "{searchQuery}"</p>
+                    <p className="text-sm text-adaptive-muted mb-6">Intenta con otros términos de búsqueda</p>
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="btn-ghost inline-flex items-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6 6 18"/>
+                        <path d="m6 6 12 12"/>
+                      </svg>
+                      Limpiar búsqueda
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-adaptive-secondary mb-6">
+                      Aún no has aceptado ningún trabajo
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('available')}
+                      className="btn-secondary inline-flex items-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.3-4.3"/>
+                      </svg>
+                      Ver trabajos disponibles
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <div className="grid gap-4">
@@ -406,7 +475,7 @@ export default function ProveedorDashboard() {
 
                     {job.status === 'Asignado' && (
                       <button
-                        onClick={() => handleCompleteJob(job.id)}
+                        onClick={() => handleCompleteClick(job.id)}
                         className="btn-primary w-full flex items-center justify-center gap-2"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -431,6 +500,30 @@ export default function ProveedorDashboard() {
           </>
         )}
       </div>
+
+      {/* Accept Job Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={acceptDialogOpen}
+        title="Aceptar Trabajo"
+        message="¿Estás seguro que deseas aceptar este trabajo? Una vez aceptado, serás responsable de completarlo."
+        confirmText="Sí, aceptar"
+        cancelText="Cancelar"
+        variant="success"
+        onConfirm={handleConfirmAccept}
+        onCancel={() => setAcceptDialogOpen(false)}
+      />
+
+      {/* Complete Job Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={completeDialogOpen}
+        title="Marcar como Completado"
+        message="¿Estás seguro que deseas marcar este trabajo como completado? El cliente será notificado."
+        confirmText="Sí, completar"
+        cancelText="Cancelar"
+        variant="success"
+        onConfirm={handleConfirmComplete}
+        onCancel={() => setCompleteDialogOpen(false)}
+      />
     </div>
   );
 }
