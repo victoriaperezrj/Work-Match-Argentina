@@ -11,7 +11,7 @@ export default function DemandanteDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
 
   const handleCancelRequest = (requestId: string) => {
     updateRequest(requestId, {
@@ -49,6 +49,7 @@ export default function DemandanteDashboard() {
     if (activeTab === 'pending') return request.status === 'Pendiente';
     if (activeTab === 'assigned') return request.status === 'Asignado';
     if (activeTab === 'completed') return request.status === 'Completado';
+    if (activeTab === 'cancelled') return request.status === 'Cancelado';
     return true;
   });
 
@@ -57,6 +58,7 @@ export default function DemandanteDashboard() {
     { id: 'pending', label: 'Pendientes', count: myRequests.filter(r => r.status === 'Pendiente').length },
     { id: 'assigned', label: 'Asignadas', count: myRequests.filter(r => r.status === 'Asignado').length },
     { id: 'completed', label: 'Completadas', count: myRequests.filter(r => r.status === 'Completado').length },
+    { id: 'cancelled', label: 'Canceladas', count: myRequests.filter(r => r.status === 'Cancelado').length },
   ];
 
   return (
