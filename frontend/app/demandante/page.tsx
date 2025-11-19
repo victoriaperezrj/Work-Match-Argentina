@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
@@ -10,6 +10,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
 import { DashboardSkeleton } from '@/components/skeleton';
+import { useKeyboardShortcuts } from '@/lib/hooks/use-keyboard-shortcuts';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function DemandanteDashboard() {
@@ -25,11 +26,51 @@ export default function DemandanteDashboard() {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
   const [mounted, setMounted] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Handle hydration
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: '/',
+      action: () => searchInputRef.current?.focus(),
+      description: 'Focus search',
+    },
+    {
+      key: 'n',
+      action: () => router.push('/demandante/new-request'),
+      description: 'New request',
+    },
+    {
+      key: '1',
+      action: () => setActiveTab('all'),
+      description: 'All requests',
+    },
+    {
+      key: '2',
+      action: () => setActiveTab('pending'),
+      description: 'Pending requests',
+    },
+    {
+      key: '3',
+      action: () => setActiveTab('assigned'),
+      description: 'Assigned requests',
+    },
+    {
+      key: '4',
+      action: () => setActiveTab('completed'),
+      description: 'Completed requests',
+    },
+    {
+      key: '5',
+      action: () => setActiveTab('cancelled'),
+      description: 'Cancelled requests',
+    },
+  ]);
 
   const handleCancelClick = (requestId: string) => {
     setRequestToCancel(requestId);
@@ -258,10 +299,11 @@ export default function DemandanteDashboard() {
               <path d="m21 21-4.3-4.3"/>
             </svg>
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar por descripción, servicio o ubicación..."
+              placeholder="Buscar por descripción, servicio o ubicación... (presiona / para buscar)"
               className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/50 text-adaptive-primary placeholder:text-adaptive-muted focus:border-blue-400 dark:focus:border-cyan-400 focus:ring-1 focus:ring-blue-400/20 dark:focus:ring-cyan-400/20 outline-none transition-all"
             />
             {searchQuery && (
