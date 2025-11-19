@@ -16,6 +16,7 @@ import 'screens/proveedor/profile_setup_screen.dart';
 import 'screens/proveedor/job_history_screen.dart';
 import 'screens/common/settings_screen.dart';
 import 'screens/common/user_profile_screen.dart';
+import 'screens/common/help_screen.dart';
 import 'utils/constants.dart';
 import 'utils/mock_data.dart';
 
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
           // Common routes
           '/settings': (context) => const SettingsScreen(),
           '/profile': (context) => const UserProfileScreen(),
+          '/help': (context) => const HelpScreen(),
         },
           );
         },
