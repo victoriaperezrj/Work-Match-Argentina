@@ -33,6 +33,19 @@ export default function NewRequestPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  // Validation helpers
+  const MIN_DESCRIPTION_LENGTH = 20;
+  const MAX_DESCRIPTION_LENGTH = 500;
+
+  const isDescriptionValid = description.trim().length >= MIN_DESCRIPTION_LENGTH && description.trim().length <= MAX_DESCRIPTION_LENGTH;
+  const isLocationValid = locationId !== '';
+  const isBudgetValid = !budget || (parseInt(budget) > 0 && parseInt(budget) <= 10000000);
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,12 +53,24 @@ export default function NewRequestPage() {
     setLoading(true);
 
     try {
-      if (!locationId) {
+      // Mark all fields as touched to show validation
+      setTouched({ description: true, location: true, budget: true });
+
+      if (!isLocationValid) {
         throw new Error('Debes seleccionar una ubicación');
       }
 
-      if (!description.trim()) {
-        throw new Error('Debes describir el trabajo que necesitas');
+      if (!isDescriptionValid) {
+        if (description.trim().length < MIN_DESCRIPTION_LENGTH) {
+          throw new Error(`La descripción debe tener al menos ${MIN_DESCRIPTION_LENGTH} caracteres`);
+        }
+        if (description.trim().length > MAX_DESCRIPTION_LENGTH) {
+          throw new Error(`La descripción no puede exceder ${MAX_DESCRIPTION_LENGTH} caracteres`);
+        }
+      }
+
+      if (!isBudgetValid) {
+        throw new Error('El presupuesto debe ser un valor positivo');
       }
 
       // Create new request
@@ -143,10 +168,36 @@ export default function NewRequestPage() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="input-premium min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base"
+                onBlur={() => handleBlur('description')}
+                className={`input-premium min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base ${
+                  touched.description && !isDescriptionValid
+                    ? 'border-red-400 dark:border-red-500 focus:border-red-400 dark:focus:border-red-500'
+                    : touched.description && isDescriptionValid
+                    ? 'border-emerald-400 dark:border-emerald-500 focus:border-emerald-400 dark:focus:border-emerald-500'
+                    : ''
+                }`}
                 required
                 placeholder="Describe detalladamente el trabajo que necesitas..."
+                maxLength={MAX_DESCRIPTION_LENGTH}
               />
+              <div className="flex justify-between items-center mt-2">
+                <p className={`text-xs ${
+                  touched.description && description.trim().length < MIN_DESCRIPTION_LENGTH
+                    ? 'text-red-500 dark:text-red-400'
+                    : 'text-adaptive-muted'
+                }`}>
+                  {description.trim().length < MIN_DESCRIPTION_LENGTH
+                    ? `Mínimo ${MIN_DESCRIPTION_LENGTH - description.trim().length} caracteres más`
+                    : 'Descripción válida'}
+                </p>
+                <p className={`text-xs ${
+                  description.trim().length > MAX_DESCRIPTION_LENGTH * 0.9
+                    ? 'text-amber-500 dark:text-amber-400'
+                    : 'text-adaptive-muted'
+                }`}>
+                  {description.trim().length}/{MAX_DESCRIPTION_LENGTH}
+                </p>
+              </div>
             </div>
 
             <div>
@@ -154,7 +205,14 @@ export default function NewRequestPage() {
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="input-premium"
+                onBlur={() => handleBlur('location')}
+                className={`input-premium ${
+                  touched.location && !isLocationValid
+                    ? 'border-red-400 dark:border-red-500 focus:border-red-400 dark:focus:border-red-500'
+                    : touched.location && isLocationValid
+                    ? 'border-emerald-400 dark:border-emerald-500 focus:border-emerald-400 dark:focus:border-emerald-500'
+                    : ''
+                }`}
                 required
               >
                 <option value="" className="bg-white dark:bg-gray-900">Selecciona una localidad...</option>
@@ -168,8 +226,14 @@ export default function NewRequestPage() {
                   </optgroup>
                 ))}
               </select>
-              <p className="text-xs text-adaptive-muted mt-2">
-                Provincia de San Luis • Pronto más provincias disponibles
+              <p className={`text-xs mt-2 ${
+                touched.location && !isLocationValid
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-adaptive-muted'
+              }`}>
+                {touched.location && !isLocationValid
+                  ? 'Debes seleccionar una ubicación'
+                  : 'Provincia de San Luis • Pronto más provincias disponibles'}
               </p>
             </div>
 
