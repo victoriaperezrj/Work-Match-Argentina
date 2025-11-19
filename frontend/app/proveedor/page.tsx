@@ -110,7 +110,9 @@ export default function ProveedorDashboard() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8 animate-slideUp">
-          <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Panel de Proveedor</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">
+            Hola, {user?.full_name?.split(' ')[0] || 'Proveedor'}
+          </h2>
           <p className="text-sm sm:text-base text-adaptive-secondary">Gestiona tus trabajos y encuentra nuevas oportunidades</p>
         </div>
 

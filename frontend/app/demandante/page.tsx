@@ -125,7 +125,9 @@ export default function DemandanteDashboard() {
         {/* Header - Mobile Stacked */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8 animate-slideUp">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">Mis Solicitudes</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-adaptive-primary mb-1 sm:mb-2">
+              Hola, {user?.full_name?.split(' ')[0] || 'Usuario'}
+            </h2>
             <p className="text-sm sm:text-base text-adaptive-secondary">Gestiona tus solicitudes de servicio</p>
           </div>
           <Link href="/demandante/new-request" className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto">
