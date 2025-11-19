@@ -13,6 +13,7 @@ export default function ProveedorDashboard() {
   const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
   const [serviceFilter, setServiceFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
@@ -22,16 +23,29 @@ export default function ProveedorDashboard() {
   // Get pending requests (available jobs for providers)
   const pendingRequests = requests.filter(r => r.status === 'Pendiente');
 
-  // Filter by service type
-  const filteredPendingRequests = serviceFilter === 'all'
-    ? pendingRequests
-    : pendingRequests.filter(r => r.service_type === serviceFilter);
+  // Search filter helper
+  const matchesSearch = (request: typeof requests[0]) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const matchesDescription = request.description.toLowerCase().includes(query);
+    const matchesServiceType = request.service_type.toLowerCase().includes(query);
+    const matchesLocation = getLocationDisplayName(request.location_id).toLowerCase().includes(query);
+    return matchesDescription || matchesServiceType || matchesLocation;
+  };
+
+  // Filter by service type and search
+  const filteredPendingRequests = pendingRequests
+    .filter(r => serviceFilter === 'all' || r.service_type === serviceFilter)
+    .filter(matchesSearch);
 
   // Get unique service types from pending requests
   const availableServiceTypes = Array.from(new Set(pendingRequests.map(r => r.service_type))).sort();
 
   // Get jobs accepted by this provider
   const acceptedJobs = requests.filter(r => r.provider_id === user?.id || (user?.id === 'mock-user-1' && r.provider_id === 'provider-1'));
+
+  // Filter accepted jobs by search
+  const filteredAcceptedJobs = acceptedJobs.filter(matchesSearch);
 
   // Calculate total earnings from completed jobs
   const completedJobs = acceptedJobs.filter(r => r.status === 'Completado');
@@ -52,7 +66,7 @@ export default function ProveedorDashboard() {
 
   const tabs = [
     { id: 'available', label: 'Disponibles', count: filteredPendingRequests.length },
-    { id: 'myJobs', label: 'Mis Trabajos', count: acceptedJobs.length },
+    { id: 'myJobs', label: 'Mis Trabajos', count: filteredAcceptedJobs.length },
   ];
 
   const stats = [
@@ -159,8 +173,36 @@ export default function ProveedorDashboard() {
           ))}
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-4 animate-slideUp" style={{ animationDelay: '0.15s' }}>
+          <div className="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-adaptive-muted">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por descripción, servicio o ubicación..."
+              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/50 text-adaptive-primary placeholder:text-adaptive-muted focus:border-emerald-400 dark:focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20 dark:focus:ring-emerald-400/20 outline-none transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-adaptive-muted hover:text-adaptive-primary"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.15s' }}>
+        <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.2s' }}>
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -295,7 +337,7 @@ export default function ProveedorDashboard() {
         {/* My Jobs Tab */}
         {activeTab === 'myJobs' && (
           <>
-            {acceptedJobs.length === 0 ? (
+            {filteredAcceptedJobs.length === 0 ? (
               <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
                 <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
@@ -319,7 +361,7 @@ export default function ProveedorDashboard() {
               </div>
             ) : (
               <div className="grid gap-4">
-                {acceptedJobs.map((job, index) => (
+                {filteredAcceptedJobs.map((job, index) => (
                   <div
                     key={job.id}
                     className="glass glass-hover p-6 animate-slideUp"

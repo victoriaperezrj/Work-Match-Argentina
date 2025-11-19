@@ -14,6 +14,7 @@ export default function DemandanteDashboard() {
   const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-high' | 'price-low'>('newest');
+  const [searchQuery, setSearchQuery] = useState('');
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [requestToCancel, setRequestToCancel] = useState<string | null>(null);
 
@@ -84,11 +85,21 @@ export default function DemandanteDashboard() {
 
   const filteredRequests = myRequests
     .filter((request) => {
-      if (activeTab === 'all') return true;
-      if (activeTab === 'pending') return request.status === 'Pendiente';
-      if (activeTab === 'assigned') return request.status === 'Asignado';
-      if (activeTab === 'completed') return request.status === 'Completado';
-      if (activeTab === 'cancelled') return request.status === 'Cancelado';
+      // Tab filter
+      if (activeTab === 'pending' && request.status !== 'Pendiente') return false;
+      if (activeTab === 'assigned' && request.status !== 'Asignado') return false;
+      if (activeTab === 'completed' && request.status !== 'Completado') return false;
+      if (activeTab === 'cancelled' && request.status !== 'Cancelado') return false;
+
+      // Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchesDescription = request.description.toLowerCase().includes(query);
+        const matchesServiceType = request.service_type.toLowerCase().includes(query);
+        const matchesLocation = getLocationDisplayName(request.location_id).toLowerCase().includes(query);
+        if (!matchesDescription && !matchesServiceType && !matchesLocation) return false;
+      }
+
       return true;
     })
     .sort((a, b) => {
@@ -208,9 +219,37 @@ export default function DemandanteDashboard() {
           ))}
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-4 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+          <div className="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-adaptive-muted">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por descripción, servicio o ubicación..."
+              className="w-full pl-10 pr-4 py-3 rounded-xl text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/50 text-adaptive-primary placeholder:text-adaptive-muted focus:border-blue-400 dark:focus:border-cyan-400 focus:ring-1 focus:ring-blue-400/20 dark:focus:ring-cyan-400/20 outline-none transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-adaptive-muted hover:text-adaptive-primary"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Tabs and Sort - Mobile Optimized */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
-          <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.15s' }}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -227,7 +266,7 @@ export default function DemandanteDashboard() {
           </div>
 
           {/* Sort Selector */}
-          <div className="flex items-center gap-2 animate-slideUp" style={{ animationDelay: '0.15s' }}>
+          <div className="flex items-center gap-2 animate-slideUp" style={{ animationDelay: '0.2s' }}>
             <label className="text-xs sm:text-sm text-adaptive-muted whitespace-nowrap">Ordenar:</label>
             <select
               value={sortBy}
