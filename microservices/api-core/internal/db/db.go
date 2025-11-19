@@ -79,6 +79,20 @@ func (db *DB) Migrate() error {
 		`CREATE INDEX IF NOT EXISTS idx_service_requests_demandante ON service_requests(demandante_id)`,
 		`CREATE INDEX IF NOT EXISTS idx_service_requests_provider ON service_requests(provider_id)`,
 		`CREATE INDEX IF NOT EXISTS idx_provider_profiles_location ON provider_profiles(lat, lon)`,
+
+		`CREATE TABLE IF NOT EXISTS ratings (
+			id SERIAL PRIMARY KEY,
+			request_id INTEGER NOT NULL REFERENCES service_requests(id) ON DELETE CASCADE,
+			from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			score INTEGER NOT NULL CHECK (score >= 1 AND score <= 5),
+			comment TEXT,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE(request_id, from_user_id)
+		)`,
+
+		`CREATE INDEX IF NOT EXISTS idx_ratings_to_user ON ratings(to_user_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_ratings_from_user ON ratings(from_user_id)`,
 	}
 
 	for _, query := range queries {

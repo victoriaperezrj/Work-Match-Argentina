@@ -35,11 +35,13 @@ func main() {
 	authService := services.NewAuthService(database.DB, jwtSecret)
 	profileService := services.NewProfileService(database.DB)
 	requestService := services.NewRequestService(database.DB, aiServiceURL)
+	ratingService := services.NewRatingService(database.DB)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	profileHandler := handlers.NewProfileHandler(profileService)
 	requestHandler := handlers.NewRequestHandler(requestService)
+	ratingHandler := handlers.NewRatingHandler(ratingService)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(authService)
@@ -71,6 +73,13 @@ func main() {
 	requestRoutes.HandleFunc("/my-requests", requestHandler.GetUserRequests).Methods("GET", "OPTIONS")
 	requestRoutes.HandleFunc("/{requestID}/accept", requestHandler.AcceptRequest).Methods("POST", "OPTIONS")
 	requestRoutes.HandleFunc("/{requestID}/complete", requestHandler.CompleteRequest).Methods("POST", "OPTIONS")
+
+	// Rating routes (protected)
+	ratingRoutes := api.PathPrefix("/ratings").Subrouter()
+	ratingRoutes.Use(authMiddleware.Authenticate)
+	ratingRoutes.HandleFunc("", ratingHandler.CreateRating).Methods("POST", "OPTIONS")
+	ratingRoutes.HandleFunc("/user/{userID}", ratingHandler.GetUserRatings).Methods("GET", "OPTIONS")
+	ratingRoutes.HandleFunc("/user/{userID}/summary", ratingHandler.GetUserRatingSummary).Methods("GET", "OPTIONS")
 
 	// Health check
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
