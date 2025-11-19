@@ -7,11 +7,13 @@ import { getLocationDisplayName } from '@/lib/constants/locations';
 import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { useToast } from '@/components/toast';
 
 export default function DemandanteDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-high' | 'price-low'>('newest');
   const [searchQuery, setSearchQuery] = useState('');
@@ -28,6 +30,7 @@ export default function DemandanteDashboard() {
       updateRequest(requestToCancel, {
         status: 'Cancelado',
       });
+      toast.success('Solicitud cancelada correctamente');
     }
     setCancelDialogOpen(false);
     setRequestToCancel(null);

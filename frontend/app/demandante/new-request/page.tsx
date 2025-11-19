@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { SAN_LUIS_LOCATIONS, LOCATIONS_BY_DEPARTMENT, DEPARTMENTS, getLocationDisplayName } from '@/lib/constants/locations';
 import { useAuthStore, useRequestsStore } from '@/lib/stores';
+import { useToast } from '@/components/toast';
 
 const SERVICE_TYPES = [
   'Plomería',
@@ -23,6 +24,7 @@ export default function NewRequestPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const addRequest = useRequestsStore((state) => state.addRequest);
+  const toast = useToast();
 
   const [description, setDescription] = useState('');
   const [serviceType, setServiceType] = useState(SERVICE_TYPES[0]);

@@ -7,11 +7,13 @@ import { getLocationDisplayName } from '@/lib/constants/locations';
 import { useAuthStore, useRequestsStore } from '@/lib/stores';
 import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { useToast } from '@/components/toast';
 
 export default function ProveedorDashboard() {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
   const [serviceFilter, setServiceFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,6 +68,7 @@ export default function ProveedorDashboard() {
         status: 'Asignado',
         provider_id: user?.id || 'mock-provider',
       });
+      toast.success('Trabajo aceptado correctamente');
     }
     setAcceptDialogOpen(false);
     setSelectedJobId(null);
@@ -81,6 +84,7 @@ export default function ProveedorDashboard() {
       updateRequest(selectedJobId, {
         status: 'Completado',
       });
+      toast.success('Trabajo marcado como completado');
     }
     setCompleteDialogOpen(false);
     setSelectedJobId(null);
