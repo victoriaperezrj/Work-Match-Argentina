@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
@@ -9,6 +9,7 @@ import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
+import { DashboardSkeleton } from '@/components/skeleton';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function ProveedorDashboard() {
@@ -24,6 +25,12 @@ export default function ProveedorDashboard() {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -135,6 +142,11 @@ export default function ProveedorDashboard() {
       textColor: 'text-amber-600 dark:text-amber-400',
     },
   ];
+
+  // Show skeleton during hydration
+  if (!mounted) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="min-h-screen">

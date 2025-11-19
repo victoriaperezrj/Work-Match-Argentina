@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getLocationDisplayName } from '@/lib/constants/locations';
@@ -9,6 +9,7 @@ import { RoleSwitcher } from '@/components/role-switcher';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { useToast } from '@/components/toast';
 import { RequestDetailsModal } from '@/components/request-details-modal';
+import { DashboardSkeleton } from '@/components/skeleton';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 
 export default function DemandanteDashboard() {
@@ -23,6 +24,12 @@ export default function DemandanteDashboard() {
   const [requestToCancel, setRequestToCancel] = useState<string | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCancelClick = (requestId: string) => {
     setRequestToCancel(requestId);
@@ -143,6 +150,11 @@ export default function DemandanteDashboard() {
     { id: 'completed', label: 'Completadas', count: myRequests.filter(r => r.status === 'Completado').length },
     { id: 'cancelled', label: 'Canceladas', count: myRequests.filter(r => r.status === 'Cancelado').length },
   ];
+
+  // Show skeleton during hydration
+  if (!mounted) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="min-h-screen">

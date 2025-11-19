@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { ServiceRequest } from '@/lib/stores/requests-store';
 import { getLocationDisplayName } from '@/lib/constants/locations';
+import { formatRelativeTime, formatDate } from '@/lib/utils/time';
 
 interface RequestDetailsModalProps {
   isOpen: boolean;
@@ -131,11 +132,7 @@ export function RequestDetailsModal({
                 <span className="text-sm text-adaptive-muted">Creado</span>
               </div>
               <p className="font-medium text-adaptive-primary ml-7 text-sm">
-                {new Date(request.created_at).toLocaleDateString('es-AR', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+                {formatDate(request.created_at)}
               </p>
             </div>
 
@@ -148,11 +145,7 @@ export function RequestDetailsModal({
                 <span className="text-sm text-adaptive-muted">Actualizado</span>
               </div>
               <p className="font-medium text-adaptive-primary ml-7 text-sm">
-                {new Date(request.updated_at).toLocaleDateString('es-AR', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                })}
+                {formatRelativeTime(request.updated_at)}
               </p>
             </div>
           </div>
