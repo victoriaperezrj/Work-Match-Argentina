@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/request_provider.dart';
 import 'providers/profile_provider.dart';
+import 'providers/rating_provider.dart';
 import 'services/api_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
@@ -45,6 +46,9 @@ class MyApp extends StatelessWidget {
 
         // Profile Provider (depends on ApiService)
         ChangeNotifierProvider(create: (_) => ProfileProvider(apiService)),
+
+        // Rating Provider (depends on ApiService)
+        ChangeNotifierProvider(create: (_) => RatingProvider(apiService)),
       ],
       child: MaterialApp(
         title: 'WorkMatch',
