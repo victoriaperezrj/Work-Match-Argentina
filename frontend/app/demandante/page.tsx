@@ -12,6 +12,7 @@ export default function DemandanteDashboard() {
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'assigned' | 'completed' | 'cancelled'>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'price-high' | 'price-low'>('newest');
 
   const handleCancelRequest = (requestId: string) => {
     updateRequest(requestId, {
@@ -69,14 +70,29 @@ export default function DemandanteDashboard() {
     );
   };
 
-  const filteredRequests = myRequests.filter((request) => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'pending') return request.status === 'Pendiente';
-    if (activeTab === 'assigned') return request.status === 'Asignado';
-    if (activeTab === 'completed') return request.status === 'Completado';
-    if (activeTab === 'cancelled') return request.status === 'Cancelado';
-    return true;
-  });
+  const filteredRequests = myRequests
+    .filter((request) => {
+      if (activeTab === 'all') return true;
+      if (activeTab === 'pending') return request.status === 'Pendiente';
+      if (activeTab === 'assigned') return request.status === 'Asignado';
+      if (activeTab === 'completed') return request.status === 'Completado';
+      if (activeTab === 'cancelled') return request.status === 'Cancelado';
+      return true;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest':
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'price-high':
+          return (b.price_quoted || 0) - (a.price_quoted || 0);
+        case 'price-low':
+          return (a.price_quoted || 0) - (b.price_quoted || 0);
+        default:
+          return 0;
+      }
+    });
 
   const tabs = [
     { id: 'all', label: 'Todas', count: myRequests.length },
@@ -180,21 +196,38 @@ export default function DemandanteDashboard() {
           ))}
         </div>
 
-        {/* Tabs - Scrollable on mobile */}
-        <div className="flex gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.1s' }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium whitespace-nowrap transition-all duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg'
-                  : 'glass text-adaptive-secondary hover:text-blue-600 dark:hover:text-cyan-300'
-              }`}
+        {/* Tabs and Sort - Mobile Optimized */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div className="flex gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium whitespace-nowrap transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg'
+                    : 'glass text-adaptive-secondary hover:text-blue-600 dark:hover:text-cyan-300'
+                }`}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Sort Selector */}
+          <div className="flex items-center gap-2 animate-slideUp" style={{ animationDelay: '0.15s' }}>
+            <label className="text-xs sm:text-sm text-adaptive-muted whitespace-nowrap">Ordenar:</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/50 text-adaptive-primary focus:border-blue-400 dark:focus:border-cyan-400 focus:ring-1 focus:ring-blue-400/20 dark:focus:ring-cyan-400/20 outline-none transition-all"
             >
-              {tab.label} ({tab.count})
-            </button>
-          ))}
+              <option value="newest">Más recientes</option>
+              <option value="oldest">Más antiguas</option>
+              <option value="price-high">Mayor precio</option>
+              <option value="price-low">Menor precio</option>
+            </select>
+          </div>
         </div>
 
         {filteredRequests.length === 0 ? (

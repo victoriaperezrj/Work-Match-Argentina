@@ -12,6 +12,7 @@ export default function ProveedorDashboard() {
   const { user, logout } = useAuthStore();
   const { requests, updateRequest } = useRequestsStore();
   const [activeTab, setActiveTab] = useState<'available' | 'myJobs'>('available');
+  const [serviceFilter, setServiceFilter] = useState<string>('all');
 
   const handleLogout = () => {
     logout();
@@ -20,6 +21,14 @@ export default function ProveedorDashboard() {
 
   // Get pending requests (available jobs for providers)
   const pendingRequests = requests.filter(r => r.status === 'Pendiente');
+
+  // Filter by service type
+  const filteredPendingRequests = serviceFilter === 'all'
+    ? pendingRequests
+    : pendingRequests.filter(r => r.service_type === serviceFilter);
+
+  // Get unique service types from pending requests
+  const availableServiceTypes = Array.from(new Set(pendingRequests.map(r => r.service_type))).sort();
 
   // Get jobs accepted by this provider
   const acceptedJobs = requests.filter(r => r.provider_id === user?.id || (user?.id === 'mock-user-1' && r.provider_id === 'provider-1'));
@@ -42,7 +51,7 @@ export default function ProveedorDashboard() {
   };
 
   const tabs = [
-    { id: 'available', label: 'Disponibles', count: pendingRequests.length },
+    { id: 'available', label: 'Disponibles', count: filteredPendingRequests.length },
     { id: 'myJobs', label: 'Mis Trabajos', count: acceptedJobs.length },
   ];
 
@@ -170,7 +179,38 @@ export default function ProveedorDashboard() {
         {/* Available Jobs Tab */}
         {activeTab === 'available' && (
           <>
-            {pendingRequests.length === 0 ? (
+            {/* Service Filter */}
+            {pendingRequests.length > 0 && (
+              <div className="mb-4 sm:mb-6 animate-slideUp" style={{ animationDelay: '0.2s' }}>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setServiceFilter('all')}
+                    className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                      serviceFilter === 'all'
+                        ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-400/50'
+                        : 'bg-gray-100 dark:bg-gray-800/50 text-adaptive-secondary border border-gray-200 dark:border-gray-700/50 hover:border-emerald-300 dark:hover:border-emerald-400/30'
+                    }`}
+                  >
+                    Todos ({pendingRequests.length})
+                  </button>
+                  {availableServiceTypes.map((service) => (
+                    <button
+                      key={service}
+                      onClick={() => setServiceFilter(service)}
+                      className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                        serviceFilter === service
+                          ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-400/50'
+                          : 'bg-gray-100 dark:bg-gray-800/50 text-adaptive-secondary border border-gray-200 dark:border-gray-700/50 hover:border-emerald-300 dark:hover:border-emerald-400/30'
+                      }`}
+                    >
+                      {service} ({pendingRequests.filter(r => r.service_type === service).length})
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {filteredPendingRequests.length === 0 ? (
           <div className="glass p-12 text-center animate-slideUp" style={{ animationDelay: '0.2s' }}>
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 dark:text-gray-500">
@@ -191,7 +231,7 @@ export default function ProveedorDashboard() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {pendingRequests.map((request, index) => (
+            {filteredPendingRequests.map((request, index) => (
               <div
                 key={request.id}
                 className="glass glass-hover p-6 animate-slideUp"
