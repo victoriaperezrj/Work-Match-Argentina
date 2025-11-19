@@ -67,11 +67,16 @@ export function RequestDetailsModal({
       />
 
       {/* Modal */}
-      <div className="relative glass p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto animate-slideUp">
+      <div
+        className="relative glass p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto animate-slideUp"
+        role="dialog"
+        aria-labelledby="request-modal-title"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-adaptive-muted hover:text-adaptive-primary transition-colors"
+          aria-label="Cerrar detalles"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 6 6 18"/>
@@ -82,7 +87,7 @@ export function RequestDetailsModal({
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-3">
-            <h2 className="text-xl font-bold text-adaptive-primary">{request.service_type}</h2>
+            <h2 id="request-modal-title" className="text-xl font-bold text-adaptive-primary">{request.service_type}</h2>
             {getStatusBadge(request.status)}
           </div>
           <p className="text-adaptive-secondary">{request.description}</p>

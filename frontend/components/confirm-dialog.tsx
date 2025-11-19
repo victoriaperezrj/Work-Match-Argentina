@@ -65,10 +65,15 @@ export function ConfirmDialog({
       />
 
       {/* Dialog */}
-      <div className="relative glass p-6 max-w-md w-full animate-slideUp">
+      <div
+        className="relative glass p-6 max-w-md w-full animate-slideUp"
+        role="alertdialog"
+        aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-description"
+      >
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div className={`p-3 rounded-xl ${styles.bg}`}>
+          <div className={`p-3 rounded-xl ${styles.bg}`} aria-hidden="true">
             {variant === 'danger' && (
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.icon}>
                 <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
@@ -92,10 +97,10 @@ export function ConfirmDialog({
 
           {/* Content */}
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-adaptive-primary mb-1">
+            <h3 id="confirm-dialog-title" className="text-lg font-semibold text-adaptive-primary mb-1">
               {title}
             </h3>
-            <p className="text-sm text-adaptive-secondary">
+            <p id="confirm-dialog-description" className="text-sm text-adaptive-secondary">
               {message}
             </p>
           </div>

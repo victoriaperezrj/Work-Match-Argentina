@@ -34,11 +34,17 @@ export function ShortcutsModal({ isOpen, onClose, shortcuts }: ShortcutsModalPro
       />
 
       {/* Modal */}
-      <div className="relative glass p-6 max-w-md w-full animate-slideUp">
+      <div
+        className="relative glass p-6 max-w-md w-full animate-slideUp"
+        role="dialog"
+        aria-labelledby="shortcuts-modal-title"
+        aria-describedby="shortcuts-modal-description"
+      >
         {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-adaptive-muted hover:text-adaptive-primary transition-colors"
+          aria-label="Cerrar modal de atajos"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M18 6 6 18"/>
@@ -62,9 +68,9 @@ export function ShortcutsModal({ isOpen, onClose, shortcuts }: ShortcutsModalPro
                 <path d="M18 2v4"/>
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-adaptive-primary">Atajos de Teclado</h2>
+            <h2 id="shortcuts-modal-title" className="text-xl font-bold text-adaptive-primary">Atajos de Teclado</h2>
           </div>
-          <p className="text-sm text-adaptive-secondary">
+          <p id="shortcuts-modal-description" className="text-sm text-adaptive-secondary">
             Usa estos atajos para navegar más rápido
           </p>
         </div>
