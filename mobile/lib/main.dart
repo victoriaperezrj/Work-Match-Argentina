@@ -5,6 +5,8 @@ import 'providers/request_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/rating_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/search_provider.dart';
+import 'providers/report_provider.dart';
 import 'services/api_service.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
@@ -17,6 +19,7 @@ import 'screens/proveedor/job_history_screen.dart';
 import 'screens/common/settings_screen.dart';
 import 'screens/common/user_profile_screen.dart';
 import 'screens/common/help_screen.dart';
+import 'screens/common/search_screen.dart';
 import 'utils/constants.dart';
 import 'utils/mock_data.dart';
 
@@ -56,6 +59,12 @@ class MyApp extends StatelessWidget {
 
         // Rating Provider (depends on ApiService)
         ChangeNotifierProvider(create: (_) => RatingProvider(apiService)),
+
+        // Search Provider (depends on ApiService)
+        ChangeNotifierProvider(create: (_) => SearchProvider(apiService)),
+
+        // Report Provider (depends on ApiService)
+        ChangeNotifierProvider(create: (_) => ReportProvider(apiService)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -87,6 +96,7 @@ class MyApp extends StatelessWidget {
           '/settings': (context) => const SettingsScreen(),
           '/profile': (context) => const UserProfileScreen(),
           '/help': (context) => const HelpScreen(),
+          '/search': (context) => const SearchScreen(),
         },
           );
         },

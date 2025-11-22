@@ -4,6 +4,7 @@ import '../models/user.dart';
 import '../models/provider_profile.dart';
 import '../models/service_request.dart';
 import '../models/rating.dart';
+import '../models/report.dart';
 
 class ApiService {
   // Cambia esto a tu backend en producción
@@ -238,6 +239,52 @@ class ApiService {
       return RatingSummary.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Error al obtener resumen de calificaciones');
+    }
+  }
+
+  // Search and Filters
+  Future<List<ServiceRequest>> searchRequests(Map<String, dynamic> params) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/requests/search'),
+      headers: _headers,
+      body: jsonEncode(params),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => ServiceRequest.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al buscar solicitudes');
+    }
+  }
+
+  // Reports
+  Future<Report> createReport(CreateReportRequest request) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/reports'),
+      headers: _headers,
+      body: jsonEncode(request.toJson()),
+    );
+
+    if (response.statusCode == 201) {
+      return Report.fromJson(jsonDecode(response.body));
+    } else {
+      final error = jsonDecode(response.body);
+      throw Exception(error['error'] ?? 'Error al crear reporte');
+    }
+  }
+
+  Future<List<Report>> getMyReports() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/v1/reports/my-reports'),
+      headers: _headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => Report.fromJson(json)).toList();
+    } else {
+      throw Exception('Error al obtener reportes');
     }
   }
 }
