@@ -93,6 +93,22 @@ func (db *DB) Migrate() error {
 
 		`CREATE INDEX IF NOT EXISTS idx_ratings_to_user ON ratings(to_user_id)`,
 		`CREATE INDEX IF NOT EXISTS idx_ratings_from_user ON ratings(from_user_id)`,
+
+		`CREATE TABLE IF NOT EXISTS reports (
+			id SERIAL PRIMARY KEY,
+			reporter_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			reported_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+			request_id INTEGER REFERENCES service_requests(id) ON DELETE SET NULL,
+			reason VARCHAR(50) NOT NULL CHECK (reason IN ('spam', 'inappropriate', 'fraud', 'harassment', 'other')),
+			description TEXT NOT NULL,
+			status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'resolved', 'dismissed')),
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)`,
+
+		`CREATE INDEX IF NOT EXISTS idx_reports_reporter ON reports(reporter_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_reports_reported ON reports(reported_id)`,
+		`CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status)`,
 	}
 
 	for _, query := range queries {

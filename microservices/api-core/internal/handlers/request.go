@@ -104,3 +104,19 @@ func (h *RequestHandler) GetUserRequests(w http.ResponseWriter, r *http.Request)
 
 	respondWithJSON(w, http.StatusOK, requests)
 }
+
+func (h *RequestHandler) SearchRequests(w http.ResponseWriter, r *http.Request) {
+	var params models.SearchRequestsParams
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	requests, err := h.requestService.SearchRequests(params)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, requests)
+}
