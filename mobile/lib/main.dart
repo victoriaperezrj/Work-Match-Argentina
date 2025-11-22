@@ -20,6 +20,8 @@ import 'screens/common/settings_screen.dart';
 import 'screens/common/user_profile_screen.dart';
 import 'screens/common/help_screen.dart';
 import 'screens/common/search_screen.dart';
+import 'screens/common/onboarding_screen.dart';
+import 'screens/common/statistics_screen.dart';
 import 'utils/constants.dart';
 import 'utils/mock_data.dart';
 
@@ -97,6 +99,8 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => const UserProfileScreen(),
           '/help': (context) => const HelpScreen(),
           '/search': (context) => const SearchScreen(),
+          '/onboarding': (context) => const OnboardingScreen(),
+          '/statistics': (context) => const StatisticsScreen(),
         },
           );
         },
