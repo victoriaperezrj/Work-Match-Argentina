@@ -7,6 +7,7 @@ import '../../widgets/shimmer_loading.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/error_state.dart';
 import '../../utils/constants.dart';
+import '../common/request_details_screen.dart';
 
 /// Demandante Dashboard
 /// Enterprise-grade implementation with:
@@ -189,10 +190,13 @@ class _DemandanteDashboardState extends State<DemandanteDashboard>
           child: ServiceRequestCard(
             request: request,
             onTap: () {
-              // TODO: Navigate to request details
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Ver detalles: ${request.serviceType}'),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RequestDetailsScreen(
+                    request: request,
+                    isProvider: false,
+                  ),
                 ),
               );
             },

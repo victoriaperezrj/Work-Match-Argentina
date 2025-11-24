@@ -18,25 +18,38 @@ class RequestProvider with ChangeNotifier {
   // State
   List<ServiceRequest> _myRequests = [];
   List<ServiceRequest> _pendingRequests = [];
+  List<ServiceRequest> _myJobs = [];
   bool _isLoading = false;
   bool _isCreating = false;
+  bool _isLoadingJobs = false;
   String? _error;
+  String? _jobsError;
 
   // Getters
   List<ServiceRequest> get myRequests => _myRequests;
   List<ServiceRequest> get pendingRequests => _pendingRequests;
+  List<ServiceRequest> get myJobs => _myJobs;
   bool get isLoading => _isLoading;
   bool get isCreating => _isCreating;
+  bool get isLoadingJobs => _isLoadingJobs;
   String? get error => _error;
+  String? get jobsError => _jobsError;
   bool get hasError => _error != null;
+  bool get hasJobsError => _jobsError != null;
 
-  // Filtered getters
+  // Filtered getters for demandante
   List<ServiceRequest> get myPendingRequests =>
       _myRequests.where((r) => r.isPending).toList();
   List<ServiceRequest> get myAssignedRequests =>
       _myRequests.where((r) => r.isAssigned).toList();
   List<ServiceRequest> get myCompletedRequests =>
       _myRequests.where((r) => r.isCompleted).toList();
+
+  // Filtered getters for provider jobs
+  List<ServiceRequest> get myAssignedJobs =>
+      _myJobs.where((r) => r.isAssigned).toList();
+  List<ServiceRequest> get myCompletedJobs =>
+      _myJobs.where((r) => r.isCompleted).toList();
 
   RequestProvider(ApiService apiService)
       : _repository = ServiceRequestRepository(apiService);
@@ -79,6 +92,27 @@ class RequestProvider with ChangeNotifier {
       debugPrint('Error loading pending requests: $e');
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Loads provider's jobs (assigned and completed)
+  /// Uses the same endpoint but filters by provider
+  Future<void> loadMyJobs({bool forceRefresh = false}) async {
+    if (!forceRefresh) {
+      _isLoadingJobs = true;
+      _jobsError = null;
+      notifyListeners();
+    }
+
+    try {
+      _myJobs = await _repository.getMyRequests(forceRefresh: forceRefresh);
+      _jobsError = null;
+    } catch (e) {
+      _jobsError = _getErrorMessage(e);
+      debugPrint('Error loading my jobs: $e');
+    } finally {
+      _isLoadingJobs = false;
       notifyListeners();
     }
   }
@@ -204,9 +238,12 @@ class RequestProvider with ChangeNotifier {
   Future<void> clear() async {
     _myRequests = [];
     _pendingRequests = [];
+    _myJobs = [];
     _isLoading = false;
     _isCreating = false;
+    _isLoadingJobs = false;
     _error = null;
+    _jobsError = null;
     await _repository.clearCache();
     notifyListeners();
   }

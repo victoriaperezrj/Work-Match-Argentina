@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/workmatch/api-core/internal/db"
@@ -35,19 +36,27 @@ func main() {
 	authService := services.NewAuthService(database.DB, jwtSecret)
 	profileService := services.NewProfileService(database.DB)
 	requestService := services.NewRequestService(database.DB, aiServiceURL)
+	ratingService := services.NewRatingService(database.DB)
+	reportService := services.NewReportService(database.DB)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	profileHandler := handlers.NewProfileHandler(profileService)
 	requestHandler := handlers.NewRequestHandler(requestService)
+	ratingHandler := handlers.NewRatingHandler(ratingService)
+	reportHandler := handlers.NewReportHandler(reportService)
 
 	// Initialize middleware
 	authMiddleware := middleware.NewAuthMiddleware(authService)
+	rateLimiter := middleware.NewRateLimiter(100, 1*time.Minute) // 100 requests per minute
 
 	// Setup router
 	r := mux.NewRouter()
 
-	// Enable CORS
+	// Apply global middleware
+	r.Use(middleware.LoggingMiddleware)
+	r.Use(middleware.SecurityHeadersMiddleware)
+	r.Use(middleware.RateLimitMiddleware(rateLimiter))
 	r.Use(corsMiddleware)
 
 	// API routes
@@ -67,10 +76,25 @@ func main() {
 	requestRoutes := api.PathPrefix("/requests").Subrouter()
 	requestRoutes.Use(authMiddleware.Authenticate)
 	requestRoutes.HandleFunc("/create", requestHandler.CreateRequest).Methods("POST", "OPTIONS")
+	requestRoutes.HandleFunc("/search", requestHandler.SearchRequests).Methods("POST", "OPTIONS")
 	requestRoutes.HandleFunc("/pending", requestHandler.GetPendingRequests).Methods("GET", "OPTIONS")
 	requestRoutes.HandleFunc("/my-requests", requestHandler.GetUserRequests).Methods("GET", "OPTIONS")
 	requestRoutes.HandleFunc("/{requestID}/accept", requestHandler.AcceptRequest).Methods("POST", "OPTIONS")
 	requestRoutes.HandleFunc("/{requestID}/complete", requestHandler.CompleteRequest).Methods("POST", "OPTIONS")
+
+	// Rating routes (protected)
+	ratingRoutes := api.PathPrefix("/ratings").Subrouter()
+	ratingRoutes.Use(authMiddleware.Authenticate)
+	ratingRoutes.HandleFunc("", ratingHandler.CreateRating).Methods("POST", "OPTIONS")
+	ratingRoutes.HandleFunc("/user/{userID}", ratingHandler.GetUserRatings).Methods("GET", "OPTIONS")
+	ratingRoutes.HandleFunc("/user/{userID}/summary", ratingHandler.GetUserRatingSummary).Methods("GET", "OPTIONS")
+
+	// Report routes (protected)
+	reportRoutes := api.PathPrefix("/reports").Subrouter()
+	reportRoutes.Use(authMiddleware.Authenticate)
+	reportRoutes.HandleFunc("", reportHandler.CreateReport).Methods("POST", "OPTIONS")
+	reportRoutes.HandleFunc("/my-reports", reportHandler.GetMyReports).Methods("GET", "OPTIONS")
+	reportRoutes.HandleFunc("/{reportID}", reportHandler.GetReportByID).Methods("GET", "OPTIONS")
 
 	// Health check
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

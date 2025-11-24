@@ -26,6 +26,20 @@ type CreateServiceRequestRequest struct {
 	Lon         float64 `json:"lon"`
 }
 
+type SearchRequestsParams struct {
+	ServiceType  *string  `json:"service_type,omitempty"`
+	Status       *string  `json:"status,omitempty"`
+	MinPrice     *float64 `json:"min_price,omitempty"`
+	MaxPrice     *float64 `json:"max_price,omitempty"`
+	Lat          *float64 `json:"lat,omitempty"`
+	Lon          *float64 `json:"lon,omitempty"`
+	RadiusKM     *int     `json:"radius_km,omitempty"`
+	SortBy       *string  `json:"sort_by,omitempty"` // created_at, price, distance
+	SortOrder    *string  `json:"sort_order,omitempty"` // asc, desc
+	Limit        *int     `json:"limit,omitempty"`
+	Offset       *int     `json:"offset,omitempty"`
+}
+
 type ServiceRequestResponse struct {
 	ID           int       `json:"id"`
 	DemandanteID int       `json:"demandante_id"`

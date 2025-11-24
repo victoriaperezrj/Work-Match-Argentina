@@ -145,13 +145,50 @@ mobile/
 - Almacenamiento seguro de tokens JWT
 - Persistencia de sesión
 
-### 🚧 En Desarrollo
-- Dashboard Demandante
-- Dashboard Proveedor
-- Creación de solicitudes de servicio
-- Geolocalización
-- Perfil de proveedor
-- Lista de trabajos pendientes
+### ✅ Demandante
+- Dashboard con tabs (Pendientes/Asignados/Completados)
+- Crear solicitudes de servicio con geolocalización
+- Ver detalles de solicitudes
+- Sistema de calificaciones post-trabajo
+- Búsqueda y filtrado
+
+### ✅ Proveedor
+- Dashboard con trabajos disponibles
+- Aceptar trabajos
+- Historial de trabajos (En Progreso/Completados)
+- Configuración de perfil (servicios, radio, ubicación)
+- Completar trabajos
+- Recibir calificaciones
+
+### ✅ Sistema de Calificaciones
+- Calificación de 1-5 estrellas
+- Comentarios opcionales
+- Resumen de calificaciones
+- Actualización automática del rating promedio
+
+### ✅ Modo Oscuro
+- Tema claro, oscuro y automático (sistema)
+- Persistencia de preferencia
+- Transiciones suaves
+
+### ✅ Modo Offline
+- Cache local con TTL
+- Sincronización automática
+- Cola de operaciones pendientes
+- Indicador visual de estado de conexión
+
+### ✅ Animaciones y UX
+- Animaciones de entrada para listas
+- Transiciones de página personalizadas
+- Avatares con indicador online
+- Loading states y shimmer effects
+- Notificaciones locales
+
+### ✅ Pantallas Adicionales
+- Perfil de usuario con estadísticas
+- Configuración de tema
+- Ayuda y soporte con FAQ
+- Detalles de solicitudes
 
 ## Testing
 
@@ -225,29 +262,33 @@ Presiona `R` (mayúscula) para reiniciar completamente la app.
 - [x] State management con Provider
 - [x] Almacenamiento seguro de tokens
 
-### Etapa 3: UI Demandante 🚧
-- [ ] Dashboard
-- [ ] Crear nueva solicitud
-- [ ] Ver solicitudes activas
-- [ ] Geolocalización
+### Etapa 3: UI Demandante ✅
+- [x] Dashboard con tabs
+- [x] Crear nueva solicitud
+- [x] Ver solicitudes activas
+- [x] Geolocalización
+- [x] Detalles de solicitudes
 
-### Etapa 4: UI Proveedor 🚧
-- [ ] Configurar perfil
-- [ ] Ver trabajos pendientes
-- [ ] Aceptar trabajos
-- [ ] Historial
+### Etapa 4: UI Proveedor ✅
+- [x] Configurar perfil
+- [x] Ver trabajos pendientes
+- [x] Aceptar trabajos
+- [x] Historial de trabajos
+- [x] Completar trabajos
 
-### Etapa 5: Características Avanzadas
-- [ ] Notificaciones push
-- [ ] Chat en tiempo real
-- [ ] Calificaciones y reviews
-- [ ] Pagos integrados
+### Etapa 5: Características Avanzadas ✅
+- [x] Notificaciones locales
+- [x] Calificaciones y reviews
+- [ ] Chat en tiempo real (Futuro)
+- [ ] Pagos integrados (Futuro)
 
-### Etapa 6: Refinamiento
-- [ ] Modo oscuro
-- [ ] Animaciones
-- [ ] Offline mode
-- [ ] Tests completos
+### Etapa 6: Refinamiento ✅
+- [x] Modo oscuro
+- [x] Animaciones y transiciones
+- [x] Offline mode con sync
+- [x] Tests unitarios
+- [x] Perfil de usuario
+- [x] Pantalla de ayuda
 
 ## Solución de Problemas
 

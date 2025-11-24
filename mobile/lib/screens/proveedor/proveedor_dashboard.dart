@@ -130,6 +130,13 @@ class _ProveedorDashboardState extends State<ProveedorDashboard> {
         title: const Text('Trabajos Disponibles'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/proveedor/history');
+            },
+            tooltip: 'Mis trabajos',
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.of(context).pushNamed('/proveedor/profile');

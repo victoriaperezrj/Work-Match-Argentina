@@ -310,6 +310,114 @@ func (s *RequestService) GetUserRequests(userID int) ([]models.ServiceRequestRes
 	return results, nil
 }
 
+func (s *RequestService) SearchRequests(params models.SearchRequestsParams) ([]models.ServiceRequestResponse, error) {
+	query := `
+		SELECT id, demandante_id, provider_id, description, service_type, lat, lon, status, price_quoted, created_at, updated_at
+		FROM service_requests
+		WHERE 1=1
+	`
+	args := []interface{}{}
+	argCount := 0
+
+	// Build dynamic WHERE clause
+	if params.ServiceType != nil {
+		argCount++
+		query += fmt.Sprintf(" AND service_type = $%d", argCount)
+		args = append(args, *params.ServiceType)
+	}
+
+	if params.Status != nil {
+		argCount++
+		query += fmt.Sprintf(" AND status = $%d", argCount)
+		args = append(args, *params.Status)
+	}
+
+	if params.MinPrice != nil {
+		argCount++
+		query += fmt.Sprintf(" AND price_quoted >= $%d", argCount)
+		args = append(args, *params.MinPrice)
+	}
+
+	if params.MaxPrice != nil {
+		argCount++
+		query += fmt.Sprintf(" AND price_quoted <= $%d", argCount)
+		args = append(args, *params.MaxPrice)
+	}
+
+	// Add sorting
+	sortBy := "created_at"
+	if params.SortBy != nil {
+		switch *params.SortBy {
+		case "created_at", "price":
+			sortBy = *params.SortBy
+		case "price_quoted":
+			sortBy = "price_quoted"
+		}
+	}
+
+	sortOrder := "DESC"
+	if params.SortOrder != nil && *params.SortOrder == "asc" {
+		sortOrder = "ASC"
+	}
+
+	query += fmt.Sprintf(" ORDER BY %s %s", sortBy, sortOrder)
+
+	// Add pagination
+	limit := 50
+	if params.Limit != nil && *params.Limit > 0 && *params.Limit <= 100 {
+		limit = *params.Limit
+	}
+	argCount++
+	query += fmt.Sprintf(" LIMIT $%d", argCount)
+	args = append(args, limit)
+
+	if params.Offset != nil && *params.Offset > 0 {
+		argCount++
+		query += fmt.Sprintf(" OFFSET $%d", argCount)
+		args = append(args, *params.Offset)
+	}
+
+	rows, err := s.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("error searching requests: %w", err)
+	}
+	defer rows.Close()
+
+	var results []models.ServiceRequestResponse
+
+	for rows.Next() {
+		var sr models.ServiceRequest
+		err := rows.Scan(
+			&sr.ID,
+			&sr.DemandanteID,
+			&sr.ProviderID,
+			&sr.Description,
+			&sr.ServiceType,
+			&sr.Lat,
+			&sr.Lon,
+			&sr.Status,
+			&sr.PriceQuoted,
+			&sr.CreatedAt,
+			&sr.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning service request: %w", err)
+		}
+
+		// If location filter is provided, check distance
+		if params.Lat != nil && params.Lon != nil && params.RadiusKM != nil {
+			distance := calculateDistance(*params.Lat, *params.Lon, sr.Lat, sr.Lon)
+			if distance > float64(*params.RadiusKM) {
+				continue
+			}
+		}
+
+		results = append(results, sr.ToResponse())
+	}
+
+	return results, nil
+}
+
 // calculateDistance calculates the distance between two coordinates in kilometers
 // using the Haversine formula
 func calculateDistance(lat1, lon1, lat2, lon2 float64) float64 {
