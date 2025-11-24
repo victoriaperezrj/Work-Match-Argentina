@@ -153,6 +153,3 @@ rgba(66, 133, 244, 0.6) // Blue
 ## 📄 Licencia
 
 Parte del proyecto WorkMatch Argentina
-
-<!-- Deployment trigger: 2025-11-24 -->
-
